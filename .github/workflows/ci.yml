@@ -19,12 +19,10 @@ jobs:
           version: stable
 
       - name: Run `forge build`
-        run: |
-          forge build --no-ansi
+        run: forge build
 
       - name: Run `forge test`
-        run: |
-          forge test --no-ansi
+        run: forge test
 
   coverage:
     name: "Contracts: forge coverage"
@@ -38,12 +36,10 @@ jobs:
           version: stable
 
       - name: Run `forge coverage`
-        run: |
-          forge coverage --no-ansi --report summary
+        run: forge coverage --report summary
 
       - name: Generate coverage report
-        run: |
-          forge coverage --no-ansi --report lcov
+        run: forge coverage --report lcov
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
