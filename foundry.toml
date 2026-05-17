@@ -13,3 +13,7 @@ runs = 1000
 [invariant]
 runs = 256
 depth = 15
+
+# Etherscan verification for Base Sepolia
+[etherscan]
+base-sepolia = { key = "${BASESCAN_API_KEY}", url = "https://api-sepolia.basescan.org/api" }
