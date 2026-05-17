@@ -40,7 +40,7 @@ This protocol enables users to create and trade on binary outcome markets (YES/N
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                           External Systems                               │
+│                           External Systems                              │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
 │  │   Chainlink  │  │   The Graph  │  │    USDC      │  │ Base Sepolia │ │
 │  │    Oracles   │  │   Subgraph   │  │   Token      │  │   L2 Chain   │ │
@@ -51,18 +51,18 @@ This protocol enables users to create and trade on binary outcome markets (YES/N
 │         │                 │                 │                 │         │
 │   ┌─────▼─────────────────▼─────────────────▼─────────────────▼─────┐   │
 │   │              Prediction Market Protocol                         │   │
-│   │   ┌─────────────┐ ┌─────────────┐ ┌─────────────────────────┐  │   │
-│   │   │  Prediction │ │  ERC-1155   │ │   ERC-4626 FeeVault    │  │   │
-│   │   │   Market    │ │   Tokens    │ │  ┌───────────────────┐  │  │   │
-│   │   │  (UUPS)     │ │             │ │  │ Governance Token │  │  │   │
-│   │   │  ┌────────┐ │ │ ┌─────────┐ │ │  │  (ERC20Votes)   │  │  │   │
-│   │   │  │  AMM   │ │ │ │  YES/   │ │ │  │                 │  │  │   │
-│   │   │  │ (Yul)  │ │ │ │   NO    │ │ │  │  ┌───────────┐  │  │  │   │
-│   │   │  │x·y=k  │ │ │ │         │ │ │  │  │ Governor  │  │  │  │   │
-│   │   │  └────────┘ │ │ └─────────┘ │ │  │  │ + Timelock│  │  │  │   │
-│   │   └─────────────┘ └─────────────┘ │  │  └───────────┘  │  │  │   │
-│   │                                   │  └───────────────────┘  │   │
-│   └───────────────────────────────────┴───────────────────────┘   │
+│   │   ┌─────────────┐ ┌─────────────┐ ┌─────────────────────────┐   │   │
+│   │   │  Prediction │ │  ERC-1155   │ │   ERC-4626 FeeVault     │   │   │
+│   │   │   Market    │ │   Tokens    │ │  ┌───────────────────┐  │   │   │
+│   │   │  (UUPS)     │ │             │ │  │ Governance Token  │  │   │   │
+│   │   │  ┌────────┐ │ │ ┌─────────┐ │ │  │  (ERC20Votes)     │  │   │   │
+│   │   │  │  AMM   │ │ │ │  YES/   │ │ │  │                   │  │   │   │
+│   │   │  │ (Yul)  │ │ │ │   NO    │ │ │  │  ┌───────────┐    │  │   │   │
+│   │   │  │x·y=k   │ │ │ │         │ │ │  │  │ Governor  │    │  │   │   │
+│   │   │  └────────┘ │ │ └─────────┘ │ │  │  │ + Timelock│    │  │   │   │
+│   │   └─────────────┘ └─────────────┘ │  │  └───────────┘    │  │   │   │
+│   │                                   │  └───────────────────┘  │   │   |
+│   └───────────────────────────────────┴─────────────────────────┘   │   |
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -70,20 +70,20 @@ This protocol enables users to create and trade on binary outcome markets (YES/N
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                          GOVERNANCE LAYER                              │
-│  PredictionGovernor ──► GovernorTimelock ──► Controls all contracts  │
-│  (1 day delay)         (2 day delay)                                  │
+│                          GOVERNANCE LAYER                           │
+│  PredictionGovernor ──► GovernorTimelock ──► Controls all contracts │
+│  (1 day delay)         (2 day delay)                                │
 └─────────────────────────────────────────────────────────────────────┘
                                     │
                                     │ owns (all admin roles)
                                     ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│                          MARKET LAYER                                │
+│                          MARKET LAYER                               │
 │  PredictionMarket (Proxy) ◄─── PredictionMarket (Implementation)    │
-│       │                                                     │       │
-│       ├─► OutcomeToken (ERC-1155)                          │       │
-│       ├─► FeeVault (ERC-4626)                              │       │
-│       └─► OracleAdapter ──► Chainlink                     │       │
+│       │                                                             │
+│       ├─► OutcomeToken (ERC-1155)                                   │
+│       ├─► FeeVault (ERC-4626)                                       │
+│       └─► OracleAdapter ──► Chainlink                               │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
