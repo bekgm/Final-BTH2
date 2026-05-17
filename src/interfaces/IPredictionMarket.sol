@@ -1,4 +1,4 @@
-﻿// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 /// @title IPredictionMarket
@@ -41,12 +41,7 @@ interface IPredictionMarket {
     /// @param question  The market question
     /// @param creator   Address that created the market
     /// @param oracleFeed Chainlink feed that will resolve the market
-    event MarketCreated(
-        uint256 indexed marketId,
-        string question,
-        address indexed creator,
-        address oracleFeed
-    );
+    event MarketCreated(uint256 indexed marketId, string question, address indexed creator, address oracleFeed);
 
     /// @notice Emitted when liquidity is added to a market's AMM
     /// @param marketId  Target market
@@ -55,11 +50,7 @@ interface IPredictionMarket {
     /// @param yesAdded  YES tokens added to reserve
     /// @param noAdded   NO tokens added to reserve
     event LiquidityAdded(
-        uint256 indexed marketId,
-        address indexed provider,
-        uint256 usdcAmount,
-        uint256 yesAdded,
-        uint256 noAdded
+        uint256 indexed marketId, address indexed provider, uint256 usdcAmount, uint256 yesAdded, uint256 noAdded
     );
 
     /// @notice Emitted when liquidity is removed from a market's AMM
@@ -67,12 +58,7 @@ interface IPredictionMarket {
     /// @param provider  Liquidity provider address
     /// @param lpShares  LP shares burned
     /// @param usdcReturned USDC returned to provider
-    event LiquidityRemoved(
-        uint256 indexed marketId,
-        address indexed provider,
-        uint256 lpShares,
-        uint256 usdcReturned
-    );
+    event LiquidityRemoved(uint256 indexed marketId, address indexed provider, uint256 lpShares, uint256 usdcReturned);
 
     /// @notice Emitted when outcome tokens are purchased via the AMM
     /// @param marketId  Target market
@@ -81,11 +67,7 @@ interface IPredictionMarket {
     /// @param amountIn  USDC spent
     /// @param amountOut Outcome tokens received
     event TokensPurchased(
-        uint256 indexed marketId,
-        address indexed buyer,
-        uint8 outcome,
-        uint256 amountIn,
-        uint256 amountOut
+        uint256 indexed marketId, address indexed buyer, uint8 outcome, uint256 amountIn, uint256 amountOut
     );
 
     /// @notice Emitted when outcome tokens are sold back via the AMM
@@ -95,11 +77,7 @@ interface IPredictionMarket {
     /// @param amountIn  Outcome tokens sold
     /// @param amountOut USDC received (after fee)
     event TokensSold(
-        uint256 indexed marketId,
-        address indexed seller,
-        uint8 outcome,
-        uint256 amountIn,
-        uint256 amountOut
+        uint256 indexed marketId, address indexed seller, uint8 outcome, uint256 amountIn, uint256 amountOut
     );
 
     /// @notice Emitted when a market is resolved via the oracle
@@ -111,21 +89,13 @@ interface IPredictionMarket {
     /// @param marketId Target market
     /// @param redeemer Address redeeming tokens
     /// @param amount   USDC paid out
-    event WinningsRedeemed(
-        uint256 indexed marketId,
-        address indexed redeemer,
-        uint256 amount
-    );
+    event WinningsRedeemed(uint256 indexed marketId, address indexed redeemer, uint256 amount);
 
     /// @notice Emitted when a user mints an equal set of YES+NO tokens
     /// @param marketId Target market
     /// @param user     Address receiving the tokens
     /// @param amount   Amount of each token minted
-    event CollateralMinted(
-        uint256 indexed marketId,
-        address indexed user,
-        uint256 amount
-    );
+    event CollateralMinted(uint256 indexed marketId, address indexed user, uint256 amount);
     // Functions
 
     /// @notice Creates a new binary prediction market
@@ -145,21 +115,13 @@ interface IPredictionMarket {
     /// @param marketId   Target market
     /// @param usdcAmount USDC to deposit
     /// @param minLpShares Minimum LP shares to receive (slippage guard)
-    function addLiquidity(
-        uint256 marketId,
-        uint256 usdcAmount,
-        uint256 minLpShares
-    ) external;
+    function addLiquidity(uint256 marketId, uint256 usdcAmount, uint256 minLpShares) external;
 
     /// @notice Removes liquidity from a market's AMM
     /// @param marketId Target market
     /// @param lpShares LP shares to burn
     /// @param minUsdc  Minimum USDC to receive (slippage guard)
-    function removeLiquidity(
-        uint256 marketId,
-        uint256 lpShares,
-        uint256 minUsdc
-    ) external;
+    function removeLiquidity(uint256 marketId, uint256 lpShares, uint256 minUsdc) external;
 
     /// @notice Buys outcome tokens using USDC via the AMM
     /// @param marketId    Target market
@@ -167,12 +129,9 @@ interface IPredictionMarket {
     /// @param amountIn    USDC to spend
     /// @param minAmountOut Minimum outcome tokens to receive (slippage guard)
     /// @return amountOut  Outcome tokens received
-    function buy(
-        uint256 marketId,
-        uint8 outcome,
-        uint256 amountIn,
-        uint256 minAmountOut
-    ) external returns (uint256 amountOut);
+    function buy(uint256 marketId, uint8 outcome, uint256 amountIn, uint256 minAmountOut)
+        external
+        returns (uint256 amountOut);
 
     /// @notice Sells outcome tokens for USDC via the AMM
     /// @param marketId     Target market
@@ -180,12 +139,9 @@ interface IPredictionMarket {
     /// @param tokenAmountIn Outcome tokens to sell
     /// @param minUsdcOut   Minimum USDC to receive (slippage guard)
     /// @return usdcOut     USDC received after fee
-    function sell(
-        uint256 marketId,
-        uint8 outcome,
-        uint256 tokenAmountIn,
-        uint256 minUsdcOut
-    ) external returns (uint256 usdcOut);
+    function sell(uint256 marketId, uint8 outcome, uint256 tokenAmountIn, uint256 minUsdcOut)
+        external
+        returns (uint256 usdcOut);
 
     /// @notice Mints an equal amount of YES and NO tokens against USDC collateral
     /// @param marketId Target market
@@ -209,8 +165,5 @@ interface IPredictionMarket {
     /// @param marketId Target market
     /// @param outcome  1 = YES, 2 = NO
     /// @return price   Price in 1e18 fixed-point (0-1e18)
-    function getPrice(
-        uint256 marketId,
-        uint8 outcome
-    ) external view returns (uint256 price);
+    function getPrice(uint256 marketId, uint8 outcome) external view returns (uint256 price);
 }

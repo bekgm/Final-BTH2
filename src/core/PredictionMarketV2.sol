@@ -1,4 +1,4 @@
-﻿// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 import {PredictionMarket} from "./PredictionMarket.sol";
@@ -39,6 +39,7 @@ contract PredictionMarketV2 is PredictionMarket {
     /// @param oldFee Previous fee in basis points
     /// @param newFee New fee in basis points
     event FeeBpsUpdated(uint256 oldFee, uint256 newFee);
+
     // Re-initializer
 
     /// @notice Upgrades a V1 proxy to V2 state
@@ -48,6 +49,7 @@ contract PredictionMarketV2 is PredictionMarket {
         version = 2;
         feeBps = 30;
     }
+
     // Governance-controlled fee setter
 
     /// @notice Updates the protocol fee rate
@@ -60,6 +62,7 @@ contract PredictionMarketV2 is PredictionMarket {
         feeBps = newFee;
         emit FeeBpsUpdated(oldFee, newFee);
     }
+
     // Overridden buy() - uses dynamic feeBps instead of FEE_BPS constant
 
     /// @notice Buys outcome tokens using USDC, applying the dynamic fee rate
@@ -73,12 +76,7 @@ contract PredictionMarketV2 is PredictionMarket {
     /// @param amountIn     USDC amount to spend (must be pre-approved)
     /// @param minAmountOut Minimum outcome tokens to receive (slippage protection)
     /// @return amountOut   Actual outcome tokens received
-    function buy(
-        uint256 marketId,
-        uint8 outcome,
-        uint256 amountIn,
-        uint256 minAmountOut
-    )
+    function buy(uint256 marketId, uint8 outcome, uint256 amountIn, uint256 minAmountOut)
         external
         override
         nonReentrant
@@ -94,17 +92,17 @@ contract PredictionMarketV2 is PredictionMarket {
         if (market.resolved) revert MarketAlreadyResolved(marketId);
 
         uint256 oldYes = market.yesReserve;
-        uint256 oldNo  = market.noReserve;
+        uint256 oldNo = market.noReserve;
         uint256 currentFeeBps = feeBps; // dynamic
 
         uint256 reserveIn;
         uint256 reserveOut;
 
         if (outcome == 1) {
-            reserveIn  = oldNo;
+            reserveIn = oldNo;
             reserveOut = oldYes;
         } else {
-            reserveIn  = oldYes;
+            reserveIn = oldYes;
             reserveOut = oldNo;
         }
 
@@ -120,11 +118,11 @@ contract PredictionMarketV2 is PredictionMarket {
         uint256 newNo;
 
         if (outcome == 1) {
-            newNo  = oldNo  + amountInAfterFee;
+            newNo = oldNo + amountInAfterFee;
             newYes = oldYes - amountOut;
         } else {
             newYes = oldYes + amountInAfterFee;
-            newNo  = oldNo  - amountOut;
+            newNo = oldNo - amountOut;
         }
 
         if (!AMM.checkInvariant(oldYes, oldNo, newYes, newNo)) {
@@ -132,8 +130,8 @@ contract PredictionMarketV2 is PredictionMarket {
         }
 
         // --- Effects ---
-        market.yesReserve   = newYes;
-        market.noReserve    = newNo;
+        market.yesReserve = newYes;
+        market.noReserve = newNo;
         market.feesAccrued += fee;
 
         // --- Interactions ---
@@ -146,9 +144,7 @@ contract PredictionMarketV2 is PredictionMarket {
             ? OutcomeToken(outcomeToken).yesTokenId(marketId)
             : OutcomeToken(outcomeToken).noTokenId(marketId);
 
-        IERC1155(outcomeToken).safeTransferFrom(
-            address(this), msg.sender, tokenId, amountOut, ""
-        );
+        IERC1155(outcomeToken).safeTransferFrom(address(this), msg.sender, tokenId, amountOut, "");
 
         emit TokensPurchased(marketId, msg.sender, outcome, amountIn, amountOut);
     }

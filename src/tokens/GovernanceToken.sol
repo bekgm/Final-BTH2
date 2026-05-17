@@ -1,4 +1,4 @@
-﻿// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
@@ -30,17 +30,16 @@ contract GovernanceToken is ERC20, ERC20Votes, ERC20Permit, AccessControl {
     /// @param requested Amount requested to mint
     /// @param available Remaining mintable supply
     error SupplyCapExceeded(uint256 requested, uint256 available);
+
     // Constructor
 
     /// @notice Deploys the GovernanceToken and grants admin + minter to initialAdmin
     /// @param initialAdmin Address that receives DEFAULT_ADMIN_ROLE and MINTER_ROLE
-    constructor(address initialAdmin)
-        ERC20("PredictionGov", "PGOV")
-        ERC20Permit("PredictionGov")
-    {
+    constructor(address initialAdmin) ERC20("PredictionGov", "PGOV") ERC20Permit("PredictionGov") {
         _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
         _grantRole(MINTER_ROLE, initialAdmin);
     }
+
     // Minting
 
     /// @notice Mints PGOV tokens to `to`
@@ -53,6 +52,7 @@ contract GovernanceToken is ERC20, ERC20Votes, ERC20Permit, AccessControl {
         if (amount > available) revert SupplyCapExceeded(amount, available);
         _mint(to, amount);
     }
+
     // ERC20Votes clock overrides (timestamp mode)
 
     /// @notice Returns current time as block.timestamp for voting snapshots
@@ -69,6 +69,7 @@ contract GovernanceToken is ERC20, ERC20Votes, ERC20Permit, AccessControl {
     function CLOCK_MODE() public pure override returns (string memory) {
         return "mode=timestamp";
     }
+
     // Internal hook - OZ v5 pattern
 
     /// @notice Hook called on every token transfer, mint, and burn
@@ -77,20 +78,14 @@ contract GovernanceToken is ERC20, ERC20Votes, ERC20Permit, AccessControl {
     /// @param from   Sender (address(0) on mint)
     /// @param to     Recipient (address(0) on burn)
     /// @param value  Amount transferred
-    function _update(
-        address from,
-        address to,
-        uint256 value
-    ) internal override(ERC20, ERC20Votes) {
+    function _update(address from, address to, uint256 value) internal override(ERC20, ERC20Votes) {
         super._update(from, to, value);
     }
 
     /// @notice Returns the current nonce for `owner` (ERC20Permit / Nonces)
     /// @param owner Address to query
     /// @return Current nonce
-    function nonces(
-        address owner
-    ) public view override(ERC20Permit, Nonces) returns (uint256) {
+    function nonces(address owner) public view override(ERC20Permit, Nonces) returns (uint256) {
         return super.nonces(owner);
     }
 }

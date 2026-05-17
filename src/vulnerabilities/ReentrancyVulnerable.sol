@@ -1,4 +1,4 @@
-﻿// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 /// @title ReentrancyVulnerable
@@ -34,6 +34,7 @@ contract ReentrancyVulnerable {
 
     /// @notice Emitted when a winning redemption succeeds
     event WinningsRedeemed(uint256 indexed marketId, address indexed redeemer, uint256 amount);
+
     // Setup helpers
 
     /// @notice Seeds a user's winning balance (stand-in for actual token minting)
@@ -42,9 +43,10 @@ contract ReentrancyVulnerable {
     /// @param amount   Winning token balance to assign
     function seedBalance(uint256 marketId, address user, uint256 amount) external payable {
         winningBalances[marketId][user] += amount;
-        totalWinningSupply[marketId]    += amount;
-        totalCollateral[marketId]       += msg.value;
+        totalWinningSupply[marketId] += amount;
+        totalCollateral[marketId] += msg.value;
     }
+
     // VULNERABLE function - DO NOT USE
 
     /// @notice VULNERABLE: sends ETH before zeroing balance (reentrancy risk)
@@ -58,17 +60,16 @@ contract ReentrancyVulnerable {
         uint256 userBalance = winningBalances[marketId][msg.sender];
         require(userBalance > 0, "no balance");
 
-        uint256 payout = (userBalance * totalCollateral[marketId])
-            / totalWinningSupply[marketId];
+        uint256 payout = (userBalance * totalCollateral[marketId]) / totalWinningSupply[marketId];
 
         // BAD: (B) INTERACTION - ETH sent BEFORE state update (VULNERABLE)
-        (bool success, ) = msg.sender.call{value: payout}("");
+        (bool success,) = msg.sender.call{value: payout}("");
         require(success, "transfer failed");
 
         // BAD: (C) EFFECT - balance zeroed AFTER the external call (TOO LATE)
         winningBalances[marketId][msg.sender] = 0;
-        totalCollateral[marketId]       -= payout;
-        totalWinningSupply[marketId]    -= userBalance;
+        totalCollateral[marketId] -= payout;
+        totalWinningSupply[marketId] -= userBalance;
 
         emit WinningsRedeemed(marketId, msg.sender, payout);
     }

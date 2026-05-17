@@ -1,9 +1,8 @@
-﻿// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
-import {AggregatorV3Interface} from
-    "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
+import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
 import {IOracleAdapter} from "../interfaces/IOracleAdapter.sol";
 
 /// @title OracleAdapter
@@ -19,6 +18,7 @@ contract OracleAdapter is AccessControl, IOracleAdapter {
 
     /// @notice Maximum acceptable age for a price update (1 hour)
     uint256 public constant MAX_STALENESS = 3600;
+
     // Constructor
 
     /// @notice Grants DEFAULT_ADMIN_ROLE to the deployer
@@ -26,6 +26,7 @@ contract OracleAdapter is AccessControl, IOracleAdapter {
     constructor(address admin) {
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
     }
+
     // IOracleAdapter implementation
 
     /// @notice Fetches the latest price and timestamp from a Chainlink feed
@@ -35,9 +36,7 @@ contract OracleAdapter is AccessControl, IOracleAdapter {
     /// @param feed Chainlink AggregatorV3Interface feed address
     /// @return price     Raw answer from the feed (positive int256)
     /// @return updatedAt Timestamp of the last successful oracle update
-    function getLatestPrice(
-        address feed
-    ) external view override returns (int256 price, uint256 updatedAt) {
+    function getLatestPrice(address feed) external view override returns (int256 price, uint256 updatedAt) {
         (
             /* uint80 roundId */,
             int256 answer,
@@ -61,11 +60,9 @@ contract OracleAdapter is AccessControl, IOracleAdapter {
     /// @param feed   Chainlink AggregatorV3Interface feed address
     /// @param maxAge Maximum acceptable age in seconds
     /// @return True if the last update is older than maxAge seconds ago
-    function isStale(
-        address feed,
-        uint256 maxAge
-    ) external view override returns (bool) {
+    function isStale(address feed, uint256 maxAge) external view override returns (bool) {
         (
+
             /* uint80 roundId */,
             /* int256 answer */,
             /* uint256 startedAt */,

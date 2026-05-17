@@ -1,20 +1,16 @@
-﻿// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 import {Governor} from "@openzeppelin/contracts/governance/Governor.sol";
-import {GovernorSettings} from
-    "@openzeppelin/contracts/governance/extensions/GovernorSettings.sol";
-import {GovernorCountingSimple} from
-    "@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol";
-import {GovernorVotes} from
-    "@openzeppelin/contracts/governance/extensions/GovernorVotes.sol";
-import {GovernorVotesQuorumFraction} from
-    "@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol";
-import {GovernorTimelockControl} from
-    "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol";
+import {GovernorSettings} from "@openzeppelin/contracts/governance/extensions/GovernorSettings.sol";
+import {GovernorCountingSimple} from "@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol";
+import {GovernorVotes} from "@openzeppelin/contracts/governance/extensions/GovernorVotes.sol";
+import {
+    GovernorVotesQuorumFraction
+} from "@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol";
+import {GovernorTimelockControl} from "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol";
 import {IVotes} from "@openzeppelin/contracts/governance/utils/IVotes.sol";
-import {TimelockController} from
-    "@openzeppelin/contracts/governance/TimelockController.sol";
+import {TimelockController} from "@openzeppelin/contracts/governance/TimelockController.sol";
 
 /// @title PredictionGovernor
 /// @notice On-chain governance contract for the PredictionMarket protocol.
@@ -63,41 +59,27 @@ contract PredictionGovernor is
         GovernorVotesQuorumFraction(quorumNumerator_)
         GovernorTimelockControl(timelock_)
     {}
+
     // Overrides required to resolve multiple-inheritance conflicts (OZ v5)
 
     /// @notice Returns the delay between proposal creation and voting start
     /// @dev GovernorSettings and Governor (IGovernor) both define this.
     /// @return Voting delay in clock units (seconds with timestamp clock)
-    function votingDelay()
-        public
-        view
-        override(Governor, GovernorSettings)
-        returns (uint256)
-    {
+    function votingDelay() public view override(Governor, GovernorSettings) returns (uint256) {
         return super.votingDelay();
     }
 
     /// @notice Returns the duration of the voting window
     /// @dev GovernorSettings and Governor (IGovernor) both define this.
     /// @return Voting period in clock units
-    function votingPeriod()
-        public
-        view
-        override(Governor, GovernorSettings)
-        returns (uint256)
-    {
+    function votingPeriod() public view override(Governor, GovernorSettings) returns (uint256) {
         return super.votingPeriod();
     }
 
     /// @notice Returns the minimum PGOV balance required to create a proposal
     /// @dev GovernorSettings and Governor both define proposalThreshold.
     /// @return Token amount threshold (in 1e18 units)
-    function proposalThreshold()
-        public
-        view
-        override(Governor, GovernorSettings)
-        returns (uint256)
-    {
+    function proposalThreshold() public view override(Governor, GovernorSettings) returns (uint256) {
         return super.proposalThreshold();
     }
 
@@ -105,14 +87,7 @@ contract PredictionGovernor is
     /// @dev GovernorVotesQuorumFraction and IGovernor both define this.
     /// @param timepoint Snapshot timestamp at which quorum is computed
     /// @return Minimum vote weight needed for quorum
-    function quorum(
-        uint256 timepoint
-    )
-        public
-        view
-        override(Governor, GovernorVotesQuorumFraction)
-        returns (uint256)
-    {
+    function quorum(uint256 timepoint) public view override(Governor, GovernorVotesQuorumFraction) returns (uint256) {
         return super.quorum(timepoint);
     }
 
@@ -120,14 +95,7 @@ contract PredictionGovernor is
     /// @dev GovernorTimelockControl overrides Governor.state - both in the chain.
     /// @param proposalId Target proposal identifier
     /// @return Current ProposalState
-    function state(
-        uint256 proposalId
-    )
-        public
-        view
-        override(Governor, GovernorTimelockControl)
-        returns (ProposalState)
-    {
+    function state(uint256 proposalId) public view override(Governor, GovernorTimelockControl) returns (ProposalState) {
         return super.state(proposalId);
     }
 
@@ -135,9 +103,7 @@ contract PredictionGovernor is
     /// @dev GovernorTimelockControl overrides Governor (IGovernor) definition.
     /// @param proposalId Target proposal identifier
     /// @return True - all proposals go through the timelock queue
-    function proposalNeedsQueuing(
-        uint256 proposalId
-    )
+    function proposalNeedsQueuing(uint256 proposalId)
         public
         view
         override(Governor, GovernorTimelockControl)
@@ -161,9 +127,7 @@ contract PredictionGovernor is
         bytes[] memory calldatas,
         bytes32 descriptionHash
     ) internal override(Governor, GovernorTimelockControl) returns (uint48) {
-        return super._queueOperations(
-            proposalId, targets, values, calldatas, descriptionHash
-        );
+        return super._queueOperations(proposalId, targets, values, calldatas, descriptionHash);
     }
 
     /// @notice Executes queued proposal operations via the timelock
@@ -180,9 +144,7 @@ contract PredictionGovernor is
         bytes[] memory calldatas,
         bytes32 descriptionHash
     ) internal override(Governor, GovernorTimelockControl) {
-        super._executeOperations(
-            proposalId, targets, values, calldatas, descriptionHash
-        );
+        super._executeOperations(proposalId, targets, values, calldatas, descriptionHash);
     }
 
     /// @notice Cancels a proposal, also cancelling its timelock operation if queued
@@ -204,12 +166,7 @@ contract PredictionGovernor is
     /// @notice Returns the executor address (the timelock controller)
     /// @dev Only GovernorTimelockControl defines _executor; single override.
     /// @return The timelock controller address
-    function _executor()
-        internal
-        view
-        override(Governor, GovernorTimelockControl)
-        returns (address)
-    {
+    function _executor() internal view override(Governor, GovernorTimelockControl) returns (address) {
         return super._executor();
     }
 }
