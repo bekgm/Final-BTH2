@@ -172,8 +172,7 @@ This protocol enables users to create and trade on binary outcome markets (YES/N
 ├── frontend/                         # React + Wagmi dashboard
 ├── docs/
 │   ├── Architecture.md              # 6+ page architecture doc
-│   ├── SecurityAudit.md             # 8+ page audit report
-│   └── CoverageReport.md            # Forge coverage results
+│   └── SecurityAudit.md             # 8+ page audit report
 └── .github/workflows/
     └── ci.yml                        # CI with tests, coverage, Slither
 ```
@@ -303,7 +302,6 @@ GitHub Actions workflow (`.github/workflows/ci.yml`) runs on every push/PR:
 |----------|---------|----------|
 | **Architecture** | C4 diagrams, storage layouts, ADRs | [`docs/Architecture.md`](docs/Architecture.md) |
 | **Security Audit** | Findings, risk analysis, attack scenarios | [`docs/SecurityAudit.md`](docs/SecurityAudit.md) |
-| **Coverage Report** | Test coverage details | [`docs/CoverageReport.md`](docs/CoverageReport.md) |
 
 ## Design Patterns Used
 
