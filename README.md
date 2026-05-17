@@ -14,7 +14,7 @@ This protocol enables users to create and trade on binary outcome markets (YES/N
 - **Timelock Security**: 2-day execution delay for all governance actions
 - **Chainlink Oracle**: Price feed integration with staleness checks
 - **Fee Vault**: ERC-4626 vault for LP yield
-- **L2 Deployment**: Deployed and verified on Base Sepolia
+- **L2 Deployment**: Deployed and verified on Base Sepolia 
 
 ## Live Deployment (Base Sepolia)
 
