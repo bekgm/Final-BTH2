@@ -11,9 +11,7 @@ import {AggregatorV3Interface} from
 ///         live Chainlink feed. NOT for production use.
 /// @custom:security-contact security@predictionprotocol.xyz
 contract MockAggregator is AggregatorV3Interface {
-    // =========================================================================
     // Storage
-    // =========================================================================
 
     /// @dev Current answer returned by latestRoundData
     int256 private _answer;
@@ -26,10 +24,7 @@ contract MockAggregator is AggregatorV3Interface {
 
     /// @dev Monotonically increasing round counter
     uint80 private _roundId;
-
-    // =========================================================================
     // Constructor
-    // =========================================================================
 
     /// @notice Initialises the mock aggregator with an answer and decimal count
     /// @param initialAnswer The first price answer to return
@@ -40,10 +35,7 @@ contract MockAggregator is AggregatorV3Interface {
         _decimals = decimals_;
         _roundId = 1;
     }
-
-    // =========================================================================
     // Setter helpers (test use only)
-    // =========================================================================
 
     /// @notice Updates the mock price and stamps updatedAt to block.timestamp
     /// @param answer New price answer to return
@@ -59,10 +51,7 @@ contract MockAggregator is AggregatorV3Interface {
     function setUpdatedAt(uint256 timestamp) external {
         _updatedAt = timestamp;
     }
-
-    // =========================================================================
     // AggregatorV3Interface implementation
-    // =========================================================================
 
     /// @notice Returns the feed's decimal precision
     /// @return Number of decimals

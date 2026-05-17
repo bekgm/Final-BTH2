@@ -14,16 +14,11 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol
 ///         because ERC-1155 safe-transfer callbacks call external contracts.
 /// @custom:security-contact security@predictionprotocol.xyz
 contract OutcomeToken is ERC1155, AccessControl, ReentrancyGuard {
-    // =========================================================================
     // Constants / Roles
-    // =========================================================================
 
     /// @notice Role that authorises minting and burning outcome tokens
     bytes32 public constant MARKET_ROLE = keccak256("MARKET_ROLE");
-
-    // =========================================================================
     // Events
-    // =========================================================================
 
     /// @notice Emitted after outcome tokens are minted for a market position
     /// @param marketId Market the tokens belong to
@@ -48,10 +43,7 @@ contract OutcomeToken is ERC1155, AccessControl, ReentrancyGuard {
         uint8 outcome,
         uint256 amount
     );
-
-    // =========================================================================
     // Constructor
-    // =========================================================================
 
     /// @notice Deploys OutcomeToken, grants DEFAULT_ADMIN_ROLE to admin
     /// @param admin  Address that receives DEFAULT_ADMIN_ROLE (can grant MARKET_ROLE)
@@ -59,10 +51,7 @@ contract OutcomeToken is ERC1155, AccessControl, ReentrancyGuard {
     constructor(address admin, string memory uri_) ERC1155(uri_) {
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
     }
-
-    // =========================================================================
     // Token-ID helpers
-    // =========================================================================
 
     /// @notice Returns the ERC-1155 token ID for the YES position of a market
     /// @param marketId Market identifier
@@ -77,10 +66,7 @@ contract OutcomeToken is ERC1155, AccessControl, ReentrancyGuard {
     function noTokenId(uint256 marketId) public pure returns (uint256) {
         return marketId * 2 + 1;
     }
-
-    // =========================================================================
     // Minting
-    // =========================================================================
 
     /// @notice Mints a single outcome token type to `to`
     /// @dev Only callable by MARKET_ROLE. Emits OutcomeMinted with the
@@ -140,10 +126,7 @@ contract OutcomeToken is ERC1155, AccessControl, ReentrancyGuard {
             emit OutcomeMinted(marketId, to, outcome, amounts[i]);
         }
     }
-
-    // =========================================================================
     // Interface support
-    // =========================================================================
 
     /// @notice Checks interface support (ERC-1155 + AccessControl)
     /// @param interfaceId ERC-165 interface identifier

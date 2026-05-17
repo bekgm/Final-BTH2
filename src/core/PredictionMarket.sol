@@ -37,10 +37,7 @@ contract PredictionMarket is
     IPredictionMarket
 {
     using SafeERC20 for IERC20;
-
-    // =========================================================================
     // Roles
-    // =========================================================================
 
     /// @notice Role that permits creating new markets (granted via governance)
     bytes32 public constant MARKET_CREATOR_ROLE = keccak256("MARKET_CREATOR_ROLE");
@@ -50,20 +47,14 @@ contract PredictionMarket is
 
     /// @notice Role that authorises UUPS upgrades
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
-
-    // =========================================================================
     // Constants
-    // =========================================================================
 
     /// @notice Protocol fee in basis points (0.3%)
     uint256 public constant FEE_BPS = 30;
 
     /// @notice Basis-point denominator
     uint256 public constant BPS = 10_000;
-
-    // =========================================================================
     // Storage — DO NOT reorder; append-only for upgrade safety
-    // =========================================================================
 
     /// @dev Auto-incrementing market counter (starts at 1 after first create)
     uint256 internal _marketCount;
@@ -88,10 +79,7 @@ contract PredictionMarket is
 
     /// @notice Address of the OracleAdapter contract
     address public oracleAdapter;
-
-    // =========================================================================
     // Custom errors
-    // =========================================================================
 
     error StalePrice(uint256 updatedAt, uint256 blockTimestamp);
     error InsufficientLiquidity(uint256 available, uint256 required);
@@ -105,10 +93,7 @@ contract PredictionMarket is
     error InvalidFeed();
     error InvalidResolutionTime();
     error ResolutionTooEarly(uint256 resolutionTime, uint256 blockTimestamp);
-
-    // =========================================================================
     // Initializer
-    // =========================================================================
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -145,10 +130,7 @@ contract PredictionMarket is
         _grantRole(PAUSER_ROLE, _admin);
         _grantRole(UPGRADER_ROLE, _admin);
     }
-
-    // =========================================================================
     // Pausable
-    // =========================================================================
 
     /// @notice Pauses all market operations
     /// @dev Only callable by PAUSER_ROLE
@@ -161,10 +143,7 @@ contract PredictionMarket is
     function unpause() external onlyRole(PAUSER_ROLE) {
         _unpause();
     }
-
-    // =========================================================================
     // Market lifecycle
-    // =========================================================================
 
     /// @notice Creates a new binary prediction market seeded with initial USDC liquidity
     /// @dev    CEI pattern:
@@ -275,10 +254,7 @@ contract PredictionMarket is
 
         emit CollateralMinted(marketId, msg.sender, amount);
     }
-
-    // =========================================================================
     // Liquidity provision
-    // =========================================================================
 
     /// @notice Adds proportional liquidity to a market's AMM reserves
     /// @dev    Mints LP shares proportional to USDC contribution relative to
@@ -389,10 +365,7 @@ contract PredictionMarket is
 
         emit LiquidityRemoved(marketId, msg.sender, lpShares, usdcToReturn);
     }
-
-    // =========================================================================
     // Trading
-    // =========================================================================
 
     /// @notice Buys outcome tokens using USDC as input via the CPMM AMM
     /// @dev    CEI pattern:
@@ -588,10 +561,7 @@ contract PredictionMarket is
 
         emit TokensSold(marketId, msg.sender, outcome, tokenAmountIn, usdcOut);
     }
-
-    // =========================================================================
     // Oracle resolution
-    // =========================================================================
 
     /// @notice Resolves a market using its Chainlink oracle feed
     /// @dev    Can be called by anyone once resolutionTime has passed and the
@@ -623,10 +593,7 @@ contract PredictionMarket is
 
         emit MarketResolved(marketId, winningOutcome);
     }
-
-    // =========================================================================
     // Redemption
-    // =========================================================================
 
     /// @notice Redeems winning outcome tokens for a proportional USDC payout
     /// @dev    Payout = userBalance * totalCollateral / totalWinningSupply
@@ -669,10 +636,7 @@ contract PredictionMarket is
 
         emit WinningsRedeemed(marketId, msg.sender, payout);
     }
-
-    // =========================================================================
     // Views
-    // =========================================================================
 
     /// @notice Returns the full Market struct for a given market ID
     /// @param marketId Target market
@@ -725,10 +689,7 @@ contract PredictionMarket is
     function marketCount() external view returns (uint256) {
         return _marketCount;
     }
-
-    // =========================================================================
     // Yul assembly sqrt (required by spec)
-    // =========================================================================
 
     /// @notice Computes integer square root using the Babylonian method in Yul assembly
     /// @dev    Used in createMarket to compute initial LP shares = sqrt(initialLiquidity).
@@ -766,10 +727,7 @@ contract PredictionMarket is
             z = (x / z + z) / 2;
         }
     }
-
-    // =========================================================================
     // UUPS upgrade authorisation
-    // =========================================================================
 
     /// @notice Authorises a UUPS upgrade to newImplementation
     /// @dev    Restricted to UPGRADER_ROLE. Empty body — the role check is the guard.
@@ -777,10 +735,7 @@ contract PredictionMarket is
     function _authorizeUpgrade(
         address newImplementation
     ) internal override onlyRole(UPGRADER_ROLE) {}
-
-    // =========================================================================
     // Additional storage (MUST stay at the end for upgrade safety)
-    // =========================================================================
 
     /// @dev marketId → outcome (1/2) → total circulating supply of that outcome token
     ///      Updated on every mint/burn path to enable accurate redemption payouts.

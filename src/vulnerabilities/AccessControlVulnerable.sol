@@ -19,9 +19,7 @@ pragma solidity ^0.8.24;
 ///
 ///         Fix: see AccessControlFixed.sol (uses OpenZeppelin AccessControl).
 contract AccessControlVulnerable {
-    // =========================================================================
     // State
-    // =========================================================================
 
     struct Market {
         uint256 resolutionTime;
@@ -32,17 +30,11 @@ contract AccessControlVulnerable {
 
     /// @dev marketId → Market
     mapping(uint256 => Market) public markets;
-
-    // =========================================================================
     // Events
-    // =========================================================================
 
     /// @notice Emitted when a market is resolved
     event MarketResolved(uint256 indexed marketId, uint8 winningOutcome);
-
-    // =========================================================================
     // Setup helpers
-    // =========================================================================
 
     /// @notice Creates a demo market (no access control for simplicity)
     /// @param marketId       Market identifier
@@ -60,10 +52,7 @@ contract AccessControlVulnerable {
             mockOraclePrice: mockPrice
         });
     }
-
-    // =========================================================================
     // VULNERABLE function — DO NOT USE
-    // =========================================================================
 
     /// @notice VULNERABLE: no access control — anyone can resolve any market
     /// @dev    BUG: There is no msg.sender authorization check of any kind.

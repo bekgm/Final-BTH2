@@ -40,9 +40,7 @@ contract PredictionGovernor is
     GovernorVotesQuorumFraction,
     GovernorTimelockControl
 {
-    // =========================================================================
     // Constructor
-    // =========================================================================
 
     /// @notice Deploys the governor with all parameters configured
     /// @param token_             GovernanceToken (PGOV) address implementing IVotes
@@ -65,10 +63,7 @@ contract PredictionGovernor is
         GovernorVotesQuorumFraction(quorumNumerator_)
         GovernorTimelockControl(timelock_)
     {}
-
-    // =========================================================================
     // Overrides required to resolve multiple-inheritance conflicts (OZ v5)
-    // =========================================================================
 
     /// @notice Returns the delay between proposal creation and voting start
     /// @dev GovernorSettings and Governor (IGovernor) both define this.

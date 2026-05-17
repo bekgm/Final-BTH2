@@ -16,16 +16,11 @@ import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 ///         after resolutionTime but uses a Chainlink oracle for the price data,
 ///         making it manipulation-resistant without needing a privileged caller.
 contract AccessControlFixed is AccessControl {
-    // =========================================================================
     // Roles
-    // =========================================================================
 
     /// @notice Role required to call resolveMarket()
     bytes32 public constant RESOLVER_ROLE = keccak256("RESOLVER_ROLE");
-
-    // =========================================================================
     // Errors
-    // =========================================================================
 
     /// @notice Reverts when attempting to resolve before resolutionTime
     /// @param resolutionTime Allowed resolution timestamp
@@ -35,10 +30,7 @@ contract AccessControlFixed is AccessControl {
     /// @notice Reverts when the market has already been resolved
     /// @param marketId The already-resolved market
     error MarketAlreadyResolved(uint256 marketId);
-
-    // =========================================================================
     // State
-    // =========================================================================
 
     struct Market {
         uint256 resolutionTime;
@@ -49,17 +41,11 @@ contract AccessControlFixed is AccessControl {
 
     /// @dev marketId → Market
     mapping(uint256 => Market) public markets;
-
-    // =========================================================================
     // Events
-    // =========================================================================
 
     /// @notice Emitted when a market is resolved
     event MarketResolved(uint256 indexed marketId, uint8 winningOutcome);
-
-    // =========================================================================
     // Constructor
-    // =========================================================================
 
     /// @notice Grants DEFAULT_ADMIN_ROLE (and optionally RESOLVER_ROLE) to admin
     /// @param admin Address receiving DEFAULT_ADMIN_ROLE
@@ -67,10 +53,7 @@ contract AccessControlFixed is AccessControl {
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
         _grantRole(RESOLVER_ROLE, admin);
     }
-
-    // =========================================================================
     // Setup helpers
-    // =========================================================================
 
     /// @notice Creates a demo market (restricted to DEFAULT_ADMIN_ROLE)
     /// @param marketId       Market identifier
@@ -88,10 +71,7 @@ contract AccessControlFixed is AccessControl {
             mockOraclePrice: mockPrice
         });
     }
-
-    // =========================================================================
     // FIXED function — role-gated + timestamp-guarded
-    // =========================================================================
 
     /// @notice FIXED: only RESOLVER_ROLE after resolutionTime can resolve a market
     /// @dev    Fix 1 — onlyRole(RESOLVER_ROLE): any caller without the role reverts.

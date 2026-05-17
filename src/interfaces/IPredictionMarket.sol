@@ -5,9 +5,7 @@ pragma solidity ^0.8.24;
 /// @notice Interface for the core binary prediction market contract
 /// @dev Defines the Market struct, all events, and all external function signatures
 interface IPredictionMarket {
-    // =========================================================================
     // Structs
-    // =========================================================================
 
     /// @notice Full state of a single prediction market
     /// @param id              Unique market identifier
@@ -36,10 +34,7 @@ interface IPredictionMarket {
         uint256 feesAccrued;
         address creator;
     }
-
-    // =========================================================================
     // Events
-    // =========================================================================
 
     /// @notice Emitted when a new prediction market is created
     /// @param marketId  Unique ID of the new market
@@ -131,10 +126,7 @@ interface IPredictionMarket {
         address indexed user,
         uint256 amount
     );
-
-    // =========================================================================
     // Functions
-    // =========================================================================
 
     /// @notice Creates a new binary prediction market
     /// @param question        Human-readable question

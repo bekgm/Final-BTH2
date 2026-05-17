@@ -4,18 +4,13 @@ pragma solidity ^0.8.24;
 /// @title IFeeVault
 /// @notice Interface for the ERC-4626 fee vault that receives protocol fees
 interface IFeeVault {
-    // =========================================================================
     // Events
-    // =========================================================================
 
     /// @notice Emitted when fees are deposited into the vault by a market
     /// @param depositor Address calling depositFees (PredictionMarket)
     /// @param amount    USDC amount deposited
     event FeesDeposited(address indexed depositor, uint256 amount);
-
-    // =========================================================================
     // Functions
-    // =========================================================================
 
     /// @notice Accepts fee payment from an authorised market contract
     /// @dev Caller must hold DEPOSITOR_ROLE. Pulls USDC via transferFrom.

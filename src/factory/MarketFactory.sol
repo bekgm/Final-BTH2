@@ -15,16 +15,11 @@ import {PredictionMarket} from "../core/PredictionMarket.sol";
 ///         implementations. Salt uniqueness is enforced via saltToMarket mapping.
 /// @custom:security-contact security@predictionprotocol.xyz
 contract MarketFactory is AccessControl {
-    // =========================================================================
     // Roles
-    // =========================================================================
 
     /// @notice Role that permits deploying new market proxies and implementations
     bytes32 public constant FACTORY_ADMIN_ROLE = keccak256("FACTORY_ADMIN_ROLE");
-
-    // =========================================================================
     // State
-    // =========================================================================
 
     /// @notice Current PredictionMarket implementation address used for new proxies
     address public implementation;
@@ -34,10 +29,7 @@ contract MarketFactory is AccessControl {
 
     /// @notice Maps CREATE2 salt → deployed proxy address (address(0) if unused)
     mapping(bytes32 => address) public saltToMarket;
-
-    // =========================================================================
     // Immutable deploy parameters forwarded to every proxy initializer
-    // =========================================================================
 
     /// @notice USDC token address forwarded to every market proxy
     address public immutable usdc;
@@ -53,10 +45,7 @@ contract MarketFactory is AccessControl {
 
     /// @notice Admin address forwarded to every market proxy's initialize()
     address public immutable marketAdmin;
-
-    // =========================================================================
     // Errors
-    // =========================================================================
 
     /// @notice Reverts when a salt has already been used for a prior deployment
     /// @param salt The duplicate salt value
@@ -64,10 +53,7 @@ contract MarketFactory is AccessControl {
 
     /// @notice Reverts when no implementation has been deployed yet
     error NoImplementation();
-
-    // =========================================================================
     // Events
-    // =========================================================================
 
     /// @notice Emitted when a new market proxy is deployed
     /// @param proxy    Address of the deployed ERC1967Proxy
@@ -82,10 +68,7 @@ contract MarketFactory is AccessControl {
     /// @notice Emitted when a new PredictionMarket implementation is deployed
     /// @param impl Address of the deployed implementation contract
     event ImplementationDeployed(address indexed impl);
-
-    // =========================================================================
     // Constructor
-    // =========================================================================
 
     /// @notice Deploys MarketFactory and grants FACTORY_ADMIN_ROLE to admin
     /// @param admin_        Address receiving FACTORY_ADMIN_ROLE and DEFAULT_ADMIN_ROLE
@@ -111,10 +94,7 @@ contract MarketFactory is AccessControl {
         oracleAdapter = oracleAdapter_;
         marketAdmin  = marketAdmin_;
     }
-
-    // =========================================================================
     // Deployment functions
-    // =========================================================================
 
     /// @notice Deploys a new PredictionMarket implementation contract via CREATE
     /// @dev    Updates `implementation` to the newly deployed address.
@@ -180,10 +160,7 @@ contract MarketFactory is AccessControl {
 
         emit MarketDeployed(proxy, salt, question);
     }
-
-    // =========================================================================
     // Views
-    // =========================================================================
 
     /// @notice Predicts the CREATE2 address for a given salt without deploying
     /// @dev    Uses the standard CREATE2 formula:

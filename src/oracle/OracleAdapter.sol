@@ -15,26 +15,18 @@ import {IOracleAdapter} from "../interfaces/IOracleAdapter.sol";
 ///         feeds) can be added without a re-deploy.
 /// @custom:security-contact security@predictionprotocol.xyz
 contract OracleAdapter is AccessControl, IOracleAdapter {
-    // =========================================================================
     // Constants
-    // =========================================================================
 
     /// @notice Maximum acceptable age for a price update (1 hour)
     uint256 public constant MAX_STALENESS = 3600;
-
-    // =========================================================================
     // Constructor
-    // =========================================================================
 
     /// @notice Grants DEFAULT_ADMIN_ROLE to the deployer
     /// @param admin Address receiving DEFAULT_ADMIN_ROLE
     constructor(address admin) {
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
     }
-
-    // =========================================================================
     // IOracleAdapter implementation
-    // =========================================================================
 
     /// @notice Fetches the latest price and timestamp from a Chainlink feed
     /// @dev Calls latestRoundData() on the AggregatorV3Interface feed.

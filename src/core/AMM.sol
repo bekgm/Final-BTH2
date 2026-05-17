@@ -6,29 +6,21 @@ pragma solidity ^0.8.24;
 /// @dev All functions are internal pure — no state reads, no external calls.
 ///      Used by PredictionMarket for buy/sell price computation.
 library AMM {
-    // =========================================================================
     // Constants
-    // =========================================================================
 
     /// @notice Protocol fee in basis points (0.3%)
     uint256 internal constant FEE_BPS = 30;
 
     /// @notice Basis-point denominator
     uint256 internal constant BPS = 10_000;
-
-    // =========================================================================
     // Errors
-    // =========================================================================
 
     /// @notice Reverts when either reserve is zero (undefined AMM state)
     error ZeroReserve();
 
     /// @notice Reverts when amountOut would equal or exceed the output reserve
     error InsufficientOutputReserve();
-
-    // =========================================================================
     // Core math
-    // =========================================================================
 
     /// @notice Computes output amount given an input, applying the fee
     /// @dev Formula (CPMM with fee):

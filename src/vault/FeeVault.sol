@@ -24,17 +24,11 @@ import {IFeeVault} from "../interfaces/IFeeVault.sol";
 /// @custom:security-contact security@predictionprotocol.xyz
 contract FeeVault is ERC4626, AccessControl, ReentrancyGuard, IFeeVault {
     using SafeERC20 for IERC20;
-
-    // =========================================================================
     // Roles
-    // =========================================================================
 
     /// @notice Role that permits calling depositFees()
     bytes32 public constant DEPOSITOR_ROLE = keccak256("DEPOSITOR_ROLE");
-
-    // =========================================================================
     // Constructor
-    // =========================================================================
 
     /// @notice Deploys FeeVault with USDC as the underlying asset
     /// @param usdc  ERC-20 token used as the vault's underlying asset (USDC)
@@ -48,10 +42,7 @@ contract FeeVault is ERC4626, AccessControl, ReentrancyGuard, IFeeVault {
     {
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
     }
-
-    // =========================================================================
     // IFeeVault — fee deposit entry-point
-    // =========================================================================
 
     /// @notice Accepts protocol fees from an authorised PredictionMarket contract
     /// @dev    Pulls `amount` USDC from msg.sender (caller must have pre-approved
@@ -65,10 +56,7 @@ contract FeeVault is ERC4626, AccessControl, ReentrancyGuard, IFeeVault {
         _deposit(msg.sender, msg.sender, amount, previewDeposit(amount));
         emit FeesDeposited(msg.sender, amount);
     }
-
-    // =========================================================================
     // ERC-4626 rounding overrides
-    // =========================================================================
 
     /// @notice Preview shares minted for a given asset deposit (round DOWN)
     /// @dev ERC-4626 requires previewDeposit to round DOWN in favour of the vault.
@@ -109,10 +97,7 @@ contract FeeVault is ERC4626, AccessControl, ReentrancyGuard, IFeeVault {
     ) public view override returns (uint256 assets) {
         return _convertToAssets(shares, Math.Rounding.Floor);
     }
-
-    // =========================================================================
     // IFeeVault view helpers (delegate to ERC4626 internals)
-    // =========================================================================
 
     /// @notice Returns total USDC held in the vault
     /// @return Total asset balance
@@ -142,10 +127,7 @@ contract FeeVault is ERC4626, AccessControl, ReentrancyGuard, IFeeVault {
     ) public view override(ERC4626, IFeeVault) returns (uint256 shares) {
         return super.convertToShares(assets);
     }
-
-    // =========================================================================
     // Interface support
-    // =========================================================================
 
     /// @notice Checks interface support (ERC-4626 + AccessControl)
     /// @param interfaceId ERC-165 interface identifier

@@ -20,10 +20,7 @@ import {FeeVault} from "../vault/FeeVault.sol";
 /// @custom:security-contact security@predictionprotocol.xyz
 contract PredictionMarketV2 is PredictionMarket {
     using SafeERC20 for IERC20;
-
-    // =========================================================================
     // New V2 storage (appended after V1 __gap — upgrade safe)
-    // =========================================================================
 
     /// @notice Semantic version set to 2 during initializeV2()
     uint256 public version;
@@ -31,27 +28,18 @@ contract PredictionMarketV2 is PredictionMarket {
     /// @notice Governable fee rate in basis points (replaces constant FEE_BPS)
     /// @dev    Default is 30 (0.3%). Governance can reduce or raise up to 100 (1%).
     uint256 public feeBps;
-
-    // =========================================================================
     // Errors
-    // =========================================================================
 
     /// @notice Reverts when a proposed fee exceeds the 1% maximum
     /// @param proposed The fee value that was rejected
     error FeeTooHigh(uint256 proposed);
-
-    // =========================================================================
     // Events
-    // =========================================================================
 
     /// @notice Emitted when governance updates the protocol fee
     /// @param oldFee Previous fee in basis points
     /// @param newFee New fee in basis points
     event FeeBpsUpdated(uint256 oldFee, uint256 newFee);
-
-    // =========================================================================
     // Re-initializer
-    // =========================================================================
 
     /// @notice Upgrades a V1 proxy to V2 state
     /// @dev    Uses reinitializer(2) — can only be called once per proxy after V1.
@@ -60,10 +48,7 @@ contract PredictionMarketV2 is PredictionMarket {
         version = 2;
         feeBps = 30;
     }
-
-    // =========================================================================
     // Governance-controlled fee setter
-    // =========================================================================
 
     /// @notice Updates the protocol fee rate
     /// @dev    Only DEFAULT_ADMIN_ROLE (set by governance via Timelock).
@@ -75,10 +60,7 @@ contract PredictionMarketV2 is PredictionMarket {
         feeBps = newFee;
         emit FeeBpsUpdated(oldFee, newFee);
     }
-
-    // =========================================================================
     // Overridden buy() — uses dynamic feeBps instead of FEE_BPS constant
-    // =========================================================================
 
     /// @notice Buys outcome tokens using USDC, applying the dynamic fee rate
     /// @dev    Identical logic to V1 buy() except FEE_BPS is replaced with feeBps.

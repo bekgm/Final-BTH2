@@ -20,9 +20,7 @@ pragma solidity ^0.8.24;
 ///
 ///         Fix: see ReentrancyFixed.sol (uses Checks-Effects-Interactions).
 contract ReentrancyVulnerable {
-    // =========================================================================
     // State
-    // =========================================================================
 
     /// @dev Winning token balances for demonstration (marketId → user → amount)
     mapping(uint256 => mapping(address => uint256)) public winningBalances;
@@ -32,17 +30,11 @@ contract ReentrancyVulnerable {
 
     /// @dev Total winning tokens outstanding per market
     mapping(uint256 => uint256) public totalWinningSupply;
-
-    // =========================================================================
     // Events
-    // =========================================================================
 
     /// @notice Emitted when a winning redemption succeeds
     event WinningsRedeemed(uint256 indexed marketId, address indexed redeemer, uint256 amount);
-
-    // =========================================================================
     // Setup helpers
-    // =========================================================================
 
     /// @notice Seeds a user's winning balance (stand-in for actual token minting)
     /// @param marketId Target market
@@ -53,10 +45,7 @@ contract ReentrancyVulnerable {
         totalWinningSupply[marketId]    += amount;
         totalCollateral[marketId]       += msg.value;
     }
-
-    // =========================================================================
     // VULNERABLE function — DO NOT USE
-    // =========================================================================
 
     /// @notice VULNERABLE: sends ETH before zeroing balance (reentrancy risk)
     /// @dev    BUG: The ETH transfer at step (B) occurs BEFORE the balance is

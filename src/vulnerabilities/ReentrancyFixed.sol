@@ -15,9 +15,7 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol
 ///              call to this function to revert immediately, regardless of state.
 ///         Either fix alone is sufficient; combining them is best practice.
 contract ReentrancyFixed is ReentrancyGuard {
-    // =========================================================================
     // State
-    // =========================================================================
 
     /// @dev Winning token balances (marketId → user → amount)
     mapping(uint256 => mapping(address => uint256)) public winningBalances;
@@ -27,17 +25,11 @@ contract ReentrancyFixed is ReentrancyGuard {
 
     /// @dev Total winning tokens outstanding per market
     mapping(uint256 => uint256) public totalWinningSupply;
-
-    // =========================================================================
     // Events
-    // =========================================================================
 
     /// @notice Emitted when a winning redemption succeeds
     event WinningsRedeemed(uint256 indexed marketId, address indexed redeemer, uint256 amount);
-
-    // =========================================================================
     // Setup helpers
-    // =========================================================================
 
     /// @notice Seeds a user's winning balance (stand-in for actual token minting)
     /// @param marketId Target market
@@ -48,10 +40,7 @@ contract ReentrancyFixed is ReentrancyGuard {
         totalWinningSupply[marketId]    += amount;
         totalCollateral[marketId]       += msg.value;
     }
-
-    // =========================================================================
     // FIXED function — CEI + nonReentrant
-    // =========================================================================
 
     /// @notice FIXED: follows Checks-Effects-Interactions; protected by nonReentrant
     /// @dev    Fix 1 — CEI: balance is cleared at step (B, Effects) BEFORE the

@@ -4,9 +4,7 @@ pragma solidity ^0.8.24;
 /// @title IOracleAdapter
 /// @notice Interface for the Chainlink oracle adapter used to resolve markets
 interface IOracleAdapter {
-    // =========================================================================
     // Errors
-    // =========================================================================
 
     /// @notice Reverts when the Chainlink feed returns a non-positive price
     /// @param price The invalid price value returned
@@ -16,10 +14,7 @@ interface IOracleAdapter {
     /// @param updatedAt     Timestamp of the last price update
     /// @param blockTimestamp Current block timestamp
     error StalePrice(uint256 updatedAt, uint256 blockTimestamp);
-
-    // =========================================================================
     // Functions
-    // =========================================================================
 
     /// @notice Fetches the latest price from a Chainlink aggregator feed
     /// @dev Reverts with InvalidPrice if answer <= 0, or StalePrice if stale
