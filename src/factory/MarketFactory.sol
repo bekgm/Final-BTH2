@@ -5,18 +5,8 @@ import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import {PredictionMarket} from "../core/PredictionMarket.sol";
 
-/// @title MarketFactory
-/// @notice Deploys and tracks PredictionMarket proxy instances.
-///         Uses CREATE2 for deterministic proxy addresses and regular CREATE
-///         for implementation deployments. Each proxy is initialised immediately
-///         after deployment.
-/// @dev    Only addresses holding FACTORY_ADMIN_ROLE may deploy markets or
-///         implementations. Salt uniqueness is enforced via saltToMarket mapping.
-/// @custom:security-contact security@predictionprotocol.xyz
 contract MarketFactory is AccessControl {
     // Roles
-
-    /// @notice Role that permits deploying new market proxies and implementations
     bytes32 public constant FACTORY_ADMIN_ROLE = keccak256("FACTORY_ADMIN_ROLE");
     // State
 
@@ -105,16 +95,6 @@ contract MarketFactory is AccessControl {
         emit ImplementationDeployed(impl);
     }
 
-    /// @notice Deploys an ERC1967Proxy pointing to `implementation` via CREATE2
-    /// @dev    The proxy is immediately initialised. The salt must be unique.
-    ///         Reverts with NoImplementation if implementation == address(0).
-    ///         Reverts with SaltAlreadyUsed if the salt has been used before.
-    ///         The initializer is encoded as initialize(_usdc, _outcomeToken,
-    ///         _feeVault, _oracleAdapter, _marketAdmin) from the factory's
-    ///         stored addresses - the proxy then calls createMarket() to seed it.
-    /// @param question Market question string (emitted in MarketDeployed event for indexing)
-    /// @param salt     Unique bytes32 for CREATE2 address derivation
-    /// @return proxy   Address of the deployed ERC1967Proxy
     function deployMarket(
         string calldata question,
         address,
