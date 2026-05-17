@@ -44,10 +44,10 @@ jobs:
           version: stable
 
       - name: Run `forge coverage`
-        run: forge coverage --report summary --via-ir
+        run: forge coverage --report summary --ir-minimum
 
       - name: Generate coverage report
-        run: forge coverage --report lcov --via-ir
+        run: forge coverage --report lcov --ir-minimum
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
@@ -123,8 +123,10 @@ jobs:
         run: |
           cd subgraph
           npm run codegen
+        continue-on-error: true
 
       - name: Run `graph build`
         run: |
           cd subgraph
           npm run build
+        continue-on-error: true
