@@ -1,5 +1,5 @@
 specVersion: 0.0.4
-description: Prediction Protocol subgraph (minimal scaffold)
+description: Prediction Market Protocol Subgraph - 5 Entities, Full Market Activity Tracking
 repository: ""
 
 schema:
@@ -19,11 +19,31 @@ dataSources:
       file: ./src/mappings.ts
       entities:
         - Market
+        - Trade
+        - LiquidityEvent
+        - User
+        - DailyVolume
       abis:
         - name: PredictionMarket
           file: ./abis/PredictionMarket.json
       eventHandlers:
+        # Market lifecycle
         - event: MarketCreated(indexed uint256,string,indexed address,address)
           handler: handleMarketCreated
         - event: MarketResolved(indexed uint256,uint8)
           handler: handleMarketResolved
+        # Trading events
+        - event: TokensPurchased(indexed uint256,indexed address,uint8,uint256,uint256)
+          handler: handleTokensPurchased
+        - event: TokensSold(indexed uint256,indexed address,uint8,uint256,uint256)
+          handler: handleTokensSold
+        # Liquidity events
+        - event: LiquidityAdded(indexed uint256,indexed address,uint256,uint256,uint256)
+          handler: handleLiquidityAdded
+        - event: LiquidityRemoved(indexed uint256,indexed address,uint256,uint256)
+          handler: handleLiquidityRemoved
+        # Redemption event
+        - event: WinningsRedeemed(indexed uint256,indexed address,uint256)
+          handler: handleWinningsRedeemed
+        - event: CollateralMinted(indexed uint256,indexed address,uint256)
+          handler: handleCollateralMinted

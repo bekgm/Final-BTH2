@@ -1,14 +1,99 @@
+"""
+Prediction Market Protocol Subgraph Schema
+5 Entities: Market, Trade, LiquidityEvent, User, DailyVolume
+"""
+
+# Entity 1: Market - Core prediction market data
 type Market @entity(immutable: false) {
   id: ID!
-  question: String
-  creator: Bytes
-  oracleFeed: Bytes
-  resolutionTime: BigInt
-  resolved: Boolean
+  question: String!
+  creator: Bytes!
+  oracleFeed: Bytes!
+  resolutionTime: BigInt!
+  resolved: Boolean!
   winningOutcome: Int
-  totalCollateral: BigInt
-  yesReserve: BigInt
-  noReserve: BigInt
-  feesAccrued: BigInt
-  createdAt: BigInt
+  totalCollateral: BigInt!
+  yesReserve: BigInt!
+  noReserve: BigInt!
+  feesAccrued: BigInt!
+  createdAt: BigInt!
+  # Derived fields
+  trades: [Trade!]! @derivedFrom(field: "market")
+  liquidityEvents: [LiquidityEvent!]! @derivedFrom(field: "market")
+  tradeCount: BigInt!
+  volume: BigInt!
+  liquidityProviderCount: BigInt!
+}
+
+# Entity 2: Trade - Individual buy/sell transactions
+type Trade @entity(immutable: true) {
+  id: ID!                              # txHash + logIndex
+  market: Market!
+  trader: Bytes!                       # Address of trader
+  tradeType: TradeType!                # BUY or SELL
+  outcome: Int!                       # 1 = YES, 2 = NO
+  amountIn: BigInt!                    # Input amount (USDC for buy, tokens for sell)
+  amountOut: BigInt!                   # Output amount (tokens for buy, USDC for sell)
+  fee: BigInt!                        # Protocol fee paid
+  price: BigInt!                      # Effective price in 1e18
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  txHash: Bytes!
+}
+
+# Entity 3: LiquidityEvent - Add/remove liquidity operations
+type LiquidityEvent @entity(immutable: true) {
+  id: ID!                              # txHash + logIndex
+  market: Market!
+  provider: Bytes!                     # LP address
+  eventType: LiquidityType!            # ADD or REMOVE
+  usdcAmount: BigInt!                  # USDC deposited/withdrawn
+  lpShares: BigInt!                    # LP tokens minted/burned
+  yesReserveChange: BigInt!            # YES reserve delta
+  noReserveChange: BigInt!             # NO reserve delta
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  txHash: Bytes!
+}
+
+# Entity 4: User - Aggregated user activity and positions
+type User @entity(immutable: false) {
+  id: ID!                              # Wallet address
+  firstActivity: BigInt!
+  lastActivity: BigInt!
+  # Trading stats
+  totalTrades: BigInt!
+  totalVolume: BigInt!                  # Total USDC volume
+  totalFeesPaid: BigInt!
+  # Position summary (across all markets)
+  marketsTraded: [Market!]!
+  # Liquidity provision
+  totalLiquidityAdded: BigInt!
+  totalLiquidityRemoved: BigInt!
+  currentLpPositions: BigInt!           # Active LP share count
+  # Redemptions
+  totalRedeemed: BigInt!
+}
+
+# Entity 5: DailyVolume - Per-day aggregated metrics
+type DailyVolume @entity(immutable: false) {
+  id: ID!                              # marketId + timestamp rounded to day
+  market: Market!
+  date: BigInt!                         # Unix timestamp at day start
+  volumeUSD: BigInt!                    # Daily volume in USDC
+  trades: BigInt!                        # Number of trades
+  fees: BigInt!                         # Fees collected
+  addLiquidity: BigInt!                 # Liquidity added
+  removeLiquidity: BigInt!              # Liquidity removed
+}
+
+# Enums
+enum TradeType {
+  BUY
+  SELL
+}
+
+enum LiquidityType {
+  ADD
+  REMOVE
 }
