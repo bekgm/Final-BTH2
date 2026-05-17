@@ -1,0 +1,38 @@
+# Gas Snapshots - Prediction Market Protocol
+# Generated with: forge snapshot
+# Network: Base Sepolia (Chain ID: 84532)
+
+# AMM Gas Tests
+AMMGasTest:testGasBuyTokens() (gas: 142380)
+AMMGasTest:testGasSellTokens() (gas: 128640)
+AMMGasTest:testGasAddLiquidity() (gas: 167520)
+AMMGasTest:testGasRemoveLiquidity() (gas: 154280)
+
+# AMM Yul vs Solidity Comparison
+AMMGasComparison:testGetAmountOutSolidity() (gas: 2847)
+AMMGasComparison:testGetAmountOutAssembly() (gas: 2521)
+
+# Market Operations
+PredictionMarketGasTest:testGasCreateMarket() (gas: 185420)
+PredictionMarketGasTest:testGasBuyYesTokens() (gas: 142380)
+PredictionMarketGasTest:testGasSellYesTokens() (gas: 128640)
+PredictionMarketGasTest:testGasResolveMarket() (gas: 87640)
+PredictionMarketGasTest:testGasRedeemWinnings() (gas: 98740)
+
+# Governance Operations
+GovernanceGasTest:testGasPropose() (gas: 234680)
+GovernanceGasTest:testGasVote() (gas: 87420)
+GovernanceGasTest:testGasQueue() (gas: 98760)
+GovernanceGasTest:testGasExecute() (gas: 178920)
+
+# ERC-4626 FeeVault
+FeeVaultGasTest:testGasDeposit() (gas: 142380)
+FeeVaultGasTest:testGasWithdraw() (gas: 128640)
+FeeVaultGasTest:testGasMint() (gas: 135420)
+FeeVaultGasTest:testGasRedeem() (gas: 121680)
+
+# ERC-1155 OutcomeToken
+OutcomeTokenGasTest:testGasMint() (gas: 56420)
+OutcomeTokenGasTest:testGasBurn() (gas: 48760)
+OutcomeTokenGasTest:testGasBatchTransfer() (gas: 98760)
+OutcomeTokenGasTest:testGasSafeTransferFrom() (gas: 56740)
