@@ -1,0 +1,11 @@
+# Foundry build artifacts
+out/
+cache/
+
+# Environment
+.env
+.env.*
+
+# OS
+.DS_Store
+Thumbs.db
