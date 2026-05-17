@@ -2,6 +2,15 @@
 out/
 cache/
 
+# Dependency installs
+node_modules/
+frontend/node_modules/
+subgraph/node_modules/
+
+# Generated builds
+frontend/dist/
+subgraph/build/
+
 # Environment
 .env
 .env.*
