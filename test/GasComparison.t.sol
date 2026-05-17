@@ -17,7 +17,7 @@ contract GasComparisonTest is Test {
 
     /// @notice Benchmark Solidity implementation
     function testGetAmountOutSolidity() public pure {
-        (uint256 amountOut, uint256 fee) = AMM.getAmountOutSolidity(
+        (uint256 amountOut, uint256 fee) = AMM.getAmountOut(
             AMOUNT_IN,
             RESERVE_IN,
             RESERVE_OUT
@@ -43,7 +43,7 @@ contract GasComparisonTest is Test {
 
     /// @notice Verify both implementations return identical results
     function testImplementationEquivalence() public pure {
-        (uint256 amountOutSolidity, uint256 feeSolidity) = AMM.getAmountOutSolidity(
+        (uint256 amountOutSolidity, uint256 feeSolidity) = AMM.getAmountOut(
             AMOUNT_IN,
             RESERVE_IN,
             RESERVE_OUT
@@ -77,7 +77,7 @@ contract GasComparisonTest is Test {
         vm.assume(amountIn < reserveIn / 10);
         vm.assume(amountIn < reserveOut / 10);
 
-        (uint256 out1, uint256 fee1) = AMM.getAmountOutSolidity(amountIn, reserveIn, reserveOut);
+        (uint256 out1, uint256 fee1) = AMM.getAmountOut(amountIn, reserveIn, reserveOut);
         (uint256 out2, uint256 fee2) = AMM.getAmountOutAssembly(amountIn, reserveIn, reserveOut);
 
         assertEq(out1, out2, "Fuzz amount out mismatch");
