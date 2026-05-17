@@ -42,9 +42,8 @@ contract AccessControlVulnerable {
     /// @param resolutionTime Earliest resolution timestamp
     /// @param mockPrice      Initial mock oracle price
     function createMarket(uint256 marketId, uint256 resolutionTime, int256 mockPrice) external {
-        markets[marketId] = Market({
-            resolutionTime: resolutionTime, resolved: false, winningOutcome: 0, mockOraclePrice: mockPrice
-        });
+        markets[marketId] =
+            Market({resolutionTime: resolutionTime, resolved: false, winningOutcome: 0, mockOraclePrice: mockPrice});
     }
 
     // VULNERABLE function - DO NOT USE
