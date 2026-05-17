@@ -1,16 +1,11 @@
-﻿// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {UUPSUpgradeable} from
-    "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import {AccessControlUpgradeable} from
-    "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import {ReentrancyGuardUpgradeable} from
-    "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import {PausableUpgradeable} from
-    "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
-import {Initializable} from
-    "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
+import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -93,6 +88,7 @@ contract PredictionMarket is
     error InvalidFeed();
     error InvalidResolutionTime();
     error ResolutionTooEarly(uint256 resolutionTime, uint256 blockTimestamp);
+
     // Initializer
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -108,13 +104,10 @@ contract PredictionMarket is
     /// @param _feeVault      FeeVault (ERC-4626) contract address
     /// @param _oracleAdapter OracleAdapter contract address
     /// @param _admin         Address receiving all privileged roles
-    function initialize(
-        address _usdc,
-        address _outcomeToken,
-        address _feeVault,
-        address _oracleAdapter,
-        address _admin
-    ) public initializer {
+    function initialize(address _usdc, address _outcomeToken, address _feeVault, address _oracleAdapter, address _admin)
+        public
+        initializer
+    {
         __UUPSUpgradeable_init();
         __AccessControl_init();
         __ReentrancyGuard_init();
@@ -130,6 +123,7 @@ contract PredictionMarket is
         _grantRole(PAUSER_ROLE, _admin);
         _grantRole(UPGRADER_ROLE, _admin);
     }
+
     // Pausable
 
     /// @notice Pauses all market operations
@@ -143,6 +137,7 @@ contract PredictionMarket is
     function unpause() external onlyRole(PAUSER_ROLE) {
         _unpause();
     }
+
     // Market lifecycle
 
     /// @notice Creates a new binary prediction market seeded with initial USDC liquidity
@@ -161,14 +156,7 @@ contract PredictionMarket is
         address oracleFeed,
         uint256 resolutionTime,
         uint256 initialLiquidity
-    )
-        external
-        override
-        onlyRole(MARKET_CREATOR_ROLE)
-        nonReentrant
-        whenNotPaused
-        returns (uint256 marketId)
-    {
+    ) external override onlyRole(MARKET_CREATOR_ROLE) nonReentrant whenNotPaused returns (uint256 marketId) {
         // --- Checks ---
         if (bytes(question).length == 0) revert InvalidQuestion();
         if (oracleFeed == address(0)) revert InvalidFeed();
@@ -227,10 +215,7 @@ contract PredictionMarket is
     ///         CEI: check amount > 0, pull USDC, mint tokens, update collateral.
     /// @param marketId Target market (must not be resolved)
     /// @param amount   USDC to lock; user receives `amount` YES + `amount` NO tokens
-    function mintOutcomeTokens(
-        uint256 marketId,
-        uint256 amount
-    ) external override nonReentrant whenNotPaused {
+    function mintOutcomeTokens(uint256 marketId, uint256 amount) external override nonReentrant whenNotPaused {
         // --- Checks ---
         if (amount == 0) revert ZeroAmount();
         Market storage market = _markets[marketId];
@@ -243,10 +228,10 @@ contract PredictionMarket is
         IERC20(usdc).safeTransferFrom(msg.sender, address(this), amount);
 
         uint256 yesId = OutcomeToken(outcomeToken).yesTokenId(marketId);
-        uint256 noId  = OutcomeToken(outcomeToken).noTokenId(marketId);
+        uint256 noId = OutcomeToken(outcomeToken).noTokenId(marketId);
 
         OutcomeToken(outcomeToken).mint(msg.sender, yesId, amount, "");
-        OutcomeToken(outcomeToken).mint(msg.sender, noId,  amount, "");
+        OutcomeToken(outcomeToken).mint(msg.sender, noId, amount, "");
 
         // Track circulating supply for both sides
         _winningSupply[marketId][1] += amount;
@@ -254,6 +239,7 @@ contract PredictionMarket is
 
         emit CollateralMinted(marketId, msg.sender, amount);
     }
+
     // Liquidity provision
 
     /// @notice Adds proportional liquidity to a market's AMM reserves
@@ -263,11 +249,12 @@ contract PredictionMarket is
     /// @param marketId   Target market
     /// @param usdcAmount USDC to deposit
     /// @param minLpShares Minimum LP shares to receive (slippage protection)
-    function addLiquidity(
-        uint256 marketId,
-        uint256 usdcAmount,
-        uint256 minLpShares
-    ) external override nonReentrant whenNotPaused {
+    function addLiquidity(uint256 marketId, uint256 usdcAmount, uint256 minLpShares)
+        external
+        override
+        nonReentrant
+        whenNotPaused
+    {
         // --- Checks ---
         if (usdcAmount == 0) revert ZeroAmount();
         Market storage market = _markets[marketId];
@@ -284,18 +271,18 @@ contract PredictionMarket is
             // Bootstrap: first liquidity after an unusual state reset
             shares = _sqrtAssembly(usdcAmount);
             yesToAdd = usdcAmount / 2;
-            noToAdd  = usdcAmount / 2;
+            noToAdd = usdcAmount / 2;
         } else {
             yesToAdd = (usdcAmount * market.yesReserve) / totalCol;
-            noToAdd  = (usdcAmount * market.noReserve)  / totalCol;
-            shares   = (usdcAmount * totalShares) / totalCol;
+            noToAdd = (usdcAmount * market.noReserve) / totalCol;
+            shares = (usdcAmount * totalShares) / totalCol;
         }
 
         if (shares < minLpShares) revert SlippageExceeded(minLpShares, shares);
 
         // --- Effects ---
-        market.yesReserve    += yesToAdd;
-        market.noReserve     += noToAdd;
+        market.yesReserve += yesToAdd;
+        market.noReserve += noToAdd;
         market.totalCollateral += usdcAmount;
         _lpShares[marketId][msg.sender] += shares;
         _totalLpShares[marketId] += shares;
@@ -304,10 +291,10 @@ contract PredictionMarket is
         IERC20(usdc).safeTransferFrom(msg.sender, address(this), usdcAmount);
 
         uint256 yesId = OutcomeToken(outcomeToken).yesTokenId(marketId);
-        uint256 noId  = OutcomeToken(outcomeToken).noTokenId(marketId);
+        uint256 noId = OutcomeToken(outcomeToken).noTokenId(marketId);
 
         OutcomeToken(outcomeToken).mint(address(this), yesId, yesToAdd, "");
-        OutcomeToken(outcomeToken).mint(address(this), noId,  noToAdd,  "");
+        OutcomeToken(outcomeToken).mint(address(this), noId, noToAdd, "");
 
         _winningSupply[marketId][1] += yesToAdd;
         _winningSupply[marketId][2] += noToAdd;
@@ -322,11 +309,7 @@ contract PredictionMarket is
     /// @param marketId Target market
     /// @param lpShares LP shares to burn
     /// @param minUsdc  Minimum USDC to receive (slippage protection)
-    function removeLiquidity(
-        uint256 marketId,
-        uint256 lpShares,
-        uint256 minUsdc
-    ) external override nonReentrant {
+    function removeLiquidity(uint256 marketId, uint256 lpShares, uint256 minUsdc) external override nonReentrant {
         // --- Checks ---
         if (lpShares == 0) revert ZeroAmount();
         Market storage market = _markets[marketId];
@@ -342,21 +325,21 @@ contract PredictionMarket is
         if (usdcToReturn < minUsdc) revert SlippageExceeded(minUsdc, usdcToReturn);
 
         uint256 yesToBurn = (lpShares * market.yesReserve) / totalShares;
-        uint256 noToBurn  = (lpShares * market.noReserve)  / totalShares;
+        uint256 noToBurn = (lpShares * market.noReserve) / totalShares;
 
         // --- Effects ---
         _lpShares[marketId][msg.sender] -= lpShares;
         _totalLpShares[marketId] -= lpShares;
-        market.yesReserve     -= yesToBurn;
-        market.noReserve      -= noToBurn;
+        market.yesReserve -= yesToBurn;
+        market.noReserve -= noToBurn;
         market.totalCollateral -= usdcToReturn;
 
         // --- Interactions ---
         uint256 yesId = OutcomeToken(outcomeToken).yesTokenId(marketId);
-        uint256 noId  = OutcomeToken(outcomeToken).noTokenId(marketId);
+        uint256 noId = OutcomeToken(outcomeToken).noTokenId(marketId);
 
         OutcomeToken(outcomeToken).burn(address(this), yesId, yesToBurn);
-        OutcomeToken(outcomeToken).burn(address(this), noId,  noToBurn);
+        OutcomeToken(outcomeToken).burn(address(this), noId, noToBurn);
 
         _winningSupply[marketId][1] -= yesToBurn;
         _winningSupply[marketId][2] -= noToBurn;
@@ -365,6 +348,7 @@ contract PredictionMarket is
 
         emit LiquidityRemoved(marketId, msg.sender, lpShares, usdcToReturn);
     }
+
     // Trading
 
     /// @notice Buys outcome tokens using USDC as input via the CPMM AMM
@@ -379,12 +363,7 @@ contract PredictionMarket is
     /// @param amountIn    USDC amount to spend (must be pre-approved)
     /// @param minAmountOut Minimum outcome tokens to receive (slippage protection)
     /// @return amountOut  Actual outcome tokens received
-    function buy(
-        uint256 marketId,
-        uint8 outcome,
-        uint256 amountIn,
-        uint256 minAmountOut
-    )
+    function buy(uint256 marketId, uint8 outcome, uint256 amountIn, uint256 minAmountOut)
         external
         virtual
         override
@@ -400,16 +379,16 @@ contract PredictionMarket is
         if (market.resolved) revert MarketAlreadyResolved(marketId);
 
         uint256 oldYes = market.yesReserve;
-        uint256 oldNo  = market.noReserve;
+        uint256 oldNo = market.noReserve;
 
         uint256 reserveIn;
         uint256 reserveOut;
 
         if (outcome == 1) {
-            reserveIn  = oldNo;
+            reserveIn = oldNo;
             reserveOut = oldYes;
         } else {
-            reserveIn  = oldYes;
+            reserveIn = oldYes;
             reserveOut = oldNo;
         }
 
@@ -425,12 +404,12 @@ contract PredictionMarket is
 
         if (outcome == 1) {
             // User buys YES: NO reserve grows by amountInAfterFee, YES reserve shrinks
-            newNo  = oldNo  + amountInAfterFee;
+            newNo = oldNo + amountInAfterFee;
             newYes = oldYes - amountOut;
         } else {
             // User buys NO: YES reserve grows by amountInAfterFee, NO reserve shrinks
             newYes = oldYes + amountInAfterFee;
-            newNo  = oldNo  - amountOut;
+            newNo = oldNo - amountOut;
         }
 
         // k-invariant: newYes * newNo >= oldYes * oldNo
@@ -439,8 +418,8 @@ contract PredictionMarket is
         }
 
         // --- Effects ---
-        market.yesReserve   = newYes;
-        market.noReserve    = newNo;
+        market.yesReserve = newYes;
+        market.noReserve = newNo;
         market.feesAccrued += fee;
         // Tokens move from contract reserve to user - supply stays constant for winning side
         // No change to _winningSupply: tokens already counted from creation/mint
@@ -449,7 +428,7 @@ contract PredictionMarket is
         IERC20(usdc).safeTransferFrom(msg.sender, address(this), amountIn);
 
         // Route fee to FeeVault
-        IERC20(usdc).safeIncreaseAllowance(feeVault, fee);
+        IERC20(usdc).forceApprove(feeVault, fee);
         FeeVault(feeVault).depositFees(fee);
 
         // Transfer outcome tokens from contract to buyer
@@ -457,9 +436,7 @@ contract PredictionMarket is
             ? OutcomeToken(outcomeToken).yesTokenId(marketId)
             : OutcomeToken(outcomeToken).noTokenId(marketId);
 
-        IERC1155(outcomeToken).safeTransferFrom(
-            address(this), msg.sender, tokenId, amountOut, ""
-        );
+        IERC1155(outcomeToken).safeTransferFrom(address(this), msg.sender, tokenId, amountOut, "");
 
         emit TokensPurchased(marketId, msg.sender, outcome, amountIn, amountOut);
     }
@@ -475,12 +452,7 @@ contract PredictionMarket is
     /// @param tokenAmountIn Outcome tokens to sell
     /// @param minUsdcOut    Minimum USDC to receive after fee (slippage protection)
     /// @return usdcOut      Net USDC received by seller (after fee deduction)
-    function sell(
-        uint256 marketId,
-        uint8 outcome,
-        uint256 tokenAmountIn,
-        uint256 minUsdcOut
-    )
+    function sell(uint256 marketId, uint8 outcome, uint256 tokenAmountIn, uint256 minUsdcOut)
         external
         virtual
         override
@@ -496,23 +468,23 @@ contract PredictionMarket is
         if (market.resolved) revert MarketAlreadyResolved(marketId);
 
         uint256 oldYes = market.yesReserve;
-        uint256 oldNo  = market.noReserve;
+        uint256 oldNo = market.noReserve;
 
         // When selling YES tokens: the YES side is the input reserve, NO is output
         uint256 reserveIn;
         uint256 reserveOut;
 
         if (outcome == 1) {
-            reserveIn  = oldYes;
+            reserveIn = oldYes;
             reserveOut = oldNo;
         } else {
-            reserveIn  = oldNo;
+            reserveIn = oldNo;
             reserveOut = oldYes;
         }
 
         // Gross USDC out before fee
         uint256 grossUsdcOut;
-        (grossUsdcOut, ) = AMM.getAmountOut(tokenAmountIn, reserveIn, reserveOut);
+        (grossUsdcOut,) = AMM.getAmountOut(tokenAmountIn, reserveIn, reserveOut);
 
         // Fee on output
         uint256 fee = (grossUsdcOut * FEE_BPS) / BPS;
@@ -526,9 +498,9 @@ contract PredictionMarket is
 
         if (outcome == 1) {
             newYes = oldYes + tokenAmountIn;
-            newNo  = oldNo  - grossUsdcOut;
+            newNo = oldNo - grossUsdcOut;
         } else {
-            newNo  = oldNo  + tokenAmountIn;
+            newNo = oldNo + tokenAmountIn;
             newYes = oldYes - grossUsdcOut;
         }
 
@@ -538,8 +510,8 @@ contract PredictionMarket is
         }
 
         // --- Effects ---
-        market.yesReserve   = newYes;
-        market.noReserve    = newNo;
+        market.yesReserve = newYes;
+        market.noReserve = newNo;
         market.feesAccrued += fee;
         // Selling burns tokens from circulation - decrease tracked supply
         _winningSupply[marketId][outcome] -= tokenAmountIn;
@@ -553,7 +525,7 @@ contract PredictionMarket is
         OutcomeToken(outcomeToken).burn(msg.sender, tokenId, tokenAmountIn);
 
         // Route fee to FeeVault
-        IERC20(usdc).safeIncreaseAllowance(feeVault, fee);
+        IERC20(usdc).forceApprove(feeVault, fee);
         FeeVault(feeVault).depositFees(fee);
 
         // Transfer net USDC to seller
@@ -561,15 +533,14 @@ contract PredictionMarket is
 
         emit TokensSold(marketId, msg.sender, outcome, tokenAmountIn, usdcOut);
     }
+
     // Oracle resolution
 
     /// @notice Resolves a market using its Chainlink oracle feed
     /// @dev    Can be called by anyone once resolutionTime has passed and the
     ///         oracle data is fresh. Price > 0 -> YES wins; price == 0 -> NO wins.
     /// @param marketId Target market to resolve
-    function resolveMarket(
-        uint256 marketId
-    ) external override nonReentrant {
+    function resolveMarket(uint256 marketId) external override nonReentrant {
         // --- Checks ---
         Market storage market = _markets[marketId];
         if (market.resolved) revert MarketAlreadyResolved(marketId);
@@ -577,8 +548,7 @@ contract PredictionMarket is
             revert ResolutionTooEarly(market.resolutionTime, block.timestamp);
         }
 
-        (int256 price, uint256 updatedAt) =
-            IOracleAdapter(oracleAdapter).getLatestPrice(market.oracleFeed);
+        (int256 price, uint256 updatedAt) = IOracleAdapter(oracleAdapter).getLatestPrice(market.oracleFeed);
 
         // Staleness check (1 hour window)
         if (updatedAt < block.timestamp - 3600) {
@@ -593,6 +563,7 @@ contract PredictionMarket is
 
         emit MarketResolved(marketId, winningOutcome);
     }
+
     // Redemption
 
     /// @notice Redeems winning outcome tokens for a proportional USDC payout
@@ -600,9 +571,7 @@ contract PredictionMarket is
     ///         CEI pattern strictly enforced: balance checks -> state updates
     ///         (burn) -> USDC transfer.
     /// @param marketId Target resolved market
-    function redeemWinningTokens(
-        uint256 marketId
-    ) external override nonReentrant {
+    function redeemWinningTokens(uint256 marketId) external override nonReentrant {
         // --- Checks ---
         Market storage market = _markets[marketId];
         if (!market.resolved) revert MarketNotResolved(marketId);
@@ -636,14 +605,13 @@ contract PredictionMarket is
 
         emit WinningsRedeemed(marketId, msg.sender, payout);
     }
+
     // Views
 
     /// @notice Returns the full Market struct for a given market ID
     /// @param marketId Target market
     /// @return The Market struct
-    function getMarket(
-        uint256 marketId
-    ) external view override returns (Market memory) {
+    function getMarket(uint256 marketId) external view override returns (Market memory) {
         return _markets[marketId];
     }
 
@@ -653,10 +621,7 @@ contract PredictionMarket is
     /// @param marketId Target market
     /// @param outcome  1 = YES, 2 = NO
     /// @return price in 1e18 (range 0 < price < 1e18)
-    function getPrice(
-        uint256 marketId,
-        uint8 outcome
-    ) external view override returns (uint256 price) {
+    function getPrice(uint256 marketId, uint8 outcome) external view override returns (uint256 price) {
         if (outcome != 1 && outcome != 2) revert InvalidOutcome(outcome);
         Market storage market = _markets[marketId];
         if (outcome == 1) {
@@ -670,10 +635,7 @@ contract PredictionMarket is
     /// @param marketId Target market
     /// @param provider Liquidity provider address
     /// @return LP share balance
-    function getLpShares(
-        uint256 marketId,
-        address provider
-    ) external view returns (uint256) {
+    function getLpShares(uint256 marketId, address provider) external view returns (uint256) {
         return _lpShares[marketId][provider];
     }
 
@@ -689,6 +651,7 @@ contract PredictionMarket is
     function marketCount() external view returns (uint256) {
         return _marketCount;
     }
+
     // Yul assembly sqrt (required by spec)
 
     /// @notice Computes integer square root using the Babylonian method in Yul assembly
@@ -732,14 +695,30 @@ contract PredictionMarket is
     /// @notice Authorises a UUPS upgrade to newImplementation
     /// @dev    Restricted to UPGRADER_ROLE. Empty body - the role check is the guard.
     /// @param newImplementation Address of the new implementation contract
-    function _authorizeUpgrade(
-        address newImplementation
-    ) internal override onlyRole(UPGRADER_ROLE) {}
+    function _authorizeUpgrade(address newImplementation) internal override onlyRole(UPGRADER_ROLE) {}
     // Additional storage (MUST stay at the end for upgrade safety)
 
     /// @dev marketId -> outcome (1/2) -> total circulating supply of that outcome token
     ///      Updated on every mint/burn path to enable accurate redemption payouts.
     mapping(uint256 => mapping(uint8 => uint256)) internal _winningSupply;
+
+    // ERC1155Receiver (required to receive outcome tokens minted to this contract)
+
+    /// @notice Accept ERC1155 token transfers
+    /// @dev Required by ERC1155 to allow minting tokens to this contract
+    function onERC1155Received(address, address, uint256, uint256, bytes memory) public pure returns (bytes4) {
+        return bytes4(0xf23a6e61); // ERC1155 onERC1155Received selector
+    }
+
+    /// @notice Accept batch ERC1155 token transfers
+    /// @dev Required by ERC1155 to allow batch minting tokens to this contract
+    function onERC1155BatchReceived(address, address, uint256[] calldata, uint256[] calldata, bytes memory)
+        public
+        pure
+        returns (bytes4)
+    {
+        return bytes4(0xbc197c81); // ERC1155 onERC1155BatchReceived selector
+    }
 
     // Gap for future storage variables (50 slots reserved)
     uint256[50] private __gap;

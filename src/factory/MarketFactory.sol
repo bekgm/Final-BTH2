@@ -1,9 +1,8 @@
-﻿// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
-import {ERC1967Proxy} from
-    "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import {PredictionMarket} from "../core/PredictionMarket.sol";
 
 /// @title MarketFactory
@@ -59,15 +58,12 @@ contract MarketFactory is AccessControl {
     /// @param proxy    Address of the deployed ERC1967Proxy
     /// @param salt     CREATE2 salt used
     /// @param question The market question string
-    event MarketDeployed(
-        address indexed proxy,
-        bytes32 indexed salt,
-        string question
-    );
+    event MarketDeployed(address indexed proxy, bytes32 indexed salt, string question);
 
     /// @notice Emitted when a new PredictionMarket implementation is deployed
     /// @param impl Address of the deployed implementation contract
     event ImplementationDeployed(address indexed impl);
+
     // Constructor
 
     /// @notice Deploys MarketFactory and grants FACTORY_ADMIN_ROLE to admin
@@ -88,12 +84,13 @@ contract MarketFactory is AccessControl {
         _grantRole(DEFAULT_ADMIN_ROLE, admin_);
         _grantRole(FACTORY_ADMIN_ROLE, admin_);
 
-        usdc         = usdc_;
+        usdc = usdc_;
         outcomeToken = outcomeToken_;
-        feeVault     = feeVault_;
+        feeVault = feeVault_;
         oracleAdapter = oracleAdapter_;
-        marketAdmin  = marketAdmin_;
+        marketAdmin = marketAdmin_;
     }
+
     // Deployment functions
 
     /// @notice Deploys a new PredictionMarket implementation contract via CREATE
@@ -101,11 +98,7 @@ contract MarketFactory is AccessControl {
     ///         The implementation must have its initializers disabled (done in
     ///         PredictionMarket constructor via _disableInitializers()).
     /// @return impl Address of the newly deployed implementation
-    function deployImplementation()
-        external
-        onlyRole(FACTORY_ADMIN_ROLE)
-        returns (address impl)
-    {
+    function deployImplementation() external onlyRole(FACTORY_ADMIN_ROLE) returns (address impl) {
         PredictionMarket newImpl = new PredictionMarket();
         impl = address(newImpl);
         implementation = impl;
@@ -124,9 +117,12 @@ contract MarketFactory is AccessControl {
     /// @return proxy   Address of the deployed ERC1967Proxy
     function deployMarket(
         string calldata question,
-        address /* oracleFeed */,
-        uint256 /* resolutionTime */,
-        uint256 /* initialLiquidity */,
+        address,
+        /* oracleFeed */
+        uint256,
+        /* resolutionTime */
+        uint256,
+        /* initialLiquidity */
         bytes32 salt
     )
         external
@@ -138,19 +134,11 @@ contract MarketFactory is AccessControl {
 
         // Encode the initialize() call that will be delegated to the implementation
         bytes memory initData = abi.encodeWithSelector(
-            PredictionMarket.initialize.selector,
-            usdc,
-            outcomeToken,
-            feeVault,
-            oracleAdapter,
-            marketAdmin
+            PredictionMarket.initialize.selector, usdc, outcomeToken, feeVault, oracleAdapter, marketAdmin
         );
 
         // Deploy proxy with CREATE2
-        ERC1967Proxy deployedProxy = new ERC1967Proxy{salt: salt}(
-            implementation,
-            initData
-        );
+        ERC1967Proxy deployedProxy = new ERC1967Proxy{salt: salt}(implementation, initData);
 
         proxy = address(deployedProxy);
 
@@ -160,6 +148,7 @@ contract MarketFactory is AccessControl {
 
         emit MarketDeployed(proxy, salt, question);
     }
+
     // Views
 
     /// @notice Predicts the CREATE2 address for a given salt without deploying
@@ -167,40 +156,19 @@ contract MarketFactory is AccessControl {
     ///         address = keccak256(0xff ++ factory ++ salt ++ keccak256(initcode))[12:]
     /// @param salt CREATE2 salt to predict for
     /// @return predicted The deterministic proxy address that would be deployed
-    function predictMarketAddress(
-        bytes32 salt
-    ) external view returns (address predicted) {
+    function predictMarketAddress(bytes32 salt) external view returns (address predicted) {
         // initcode = type(ERC1967Proxy).creationCode ++ abi.encode(implementation, initData)
         bytes memory initData = abi.encodeWithSelector(
-            PredictionMarket.initialize.selector,
-            usdc,
-            outcomeToken,
-            feeVault,
-            oracleAdapter,
-            marketAdmin
+            PredictionMarket.initialize.selector, usdc, outcomeToken, feeVault, oracleAdapter, marketAdmin
         );
 
-        bytes memory creationCode = abi.encodePacked(
-            type(ERC1967Proxy).creationCode,
-            abi.encode(implementation, initData)
-        );
+        bytes memory creationCode =
+            abi.encodePacked(type(ERC1967Proxy).creationCode, abi.encode(implementation, initData));
 
         bytes32 initcodeHash = keccak256(creationCode);
 
-        predicted = address(
-            uint160(
-                uint256(
-                    keccak256(
-                        abi.encodePacked(
-                            bytes1(0xff),
-                            address(this),
-                            salt,
-                            initcodeHash
-                        )
-                    )
-                )
-            )
-        );
+        predicted =
+            address(uint160(uint256(keccak256(abi.encodePacked(bytes1(0xff), address(this), salt, initcodeHash)))));
     }
 
     /// @notice Returns the number of deployed market proxies

@@ -1,4 +1,4 @@
-﻿// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 import {ERC1155} from "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
@@ -25,24 +25,15 @@ contract OutcomeToken is ERC1155, AccessControl, ReentrancyGuard {
     /// @param to       Recipient address
     /// @param outcome  0 = YES position, 1 = NO position (derived from token ID parity)
     /// @param amount   Number of tokens minted
-    event OutcomeMinted(
-        uint256 indexed marketId,
-        address indexed to,
-        uint8 outcome,
-        uint256 amount
-    );
+    event OutcomeMinted(uint256 indexed marketId, address indexed to, uint8 outcome, uint256 amount);
 
     /// @notice Emitted after outcome tokens are burned
     /// @param marketId Market the tokens belong to
     /// @param from     Address whose tokens were burned
     /// @param outcome  0 = YES position, 1 = NO position
     /// @param amount   Number of tokens burned
-    event OutcomeBurned(
-        uint256 indexed marketId,
-        address indexed from,
-        uint8 outcome,
-        uint256 amount
-    );
+    event OutcomeBurned(uint256 indexed marketId, address indexed from, uint8 outcome, uint256 amount);
+
     // Constructor
 
     /// @notice Deploys OutcomeToken, grants DEFAULT_ADMIN_ROLE to admin
@@ -51,6 +42,7 @@ contract OutcomeToken is ERC1155, AccessControl, ReentrancyGuard {
     constructor(address admin, string memory uri_) ERC1155(uri_) {
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
     }
+
     // Token-ID helpers
 
     /// @notice Returns the ERC-1155 token ID for the YES position of a market
@@ -66,6 +58,7 @@ contract OutcomeToken is ERC1155, AccessControl, ReentrancyGuard {
     function noTokenId(uint256 marketId) public pure returns (uint256) {
         return marketId * 2 + 1;
     }
+
     // Minting
 
     /// @notice Mints a single outcome token type to `to`
@@ -75,12 +68,11 @@ contract OutcomeToken is ERC1155, AccessControl, ReentrancyGuard {
     /// @param id     ERC-1155 token ID (use yesTokenId / noTokenId helpers)
     /// @param amount Number of tokens to mint
     /// @param data   Forwarded to ERC-1155 receiver hook
-    function mint(
-        address to,
-        uint256 id,
-        uint256 amount,
-        bytes memory data
-    ) external onlyRole(MARKET_ROLE) nonReentrant {
+    function mint(address to, uint256 id, uint256 amount, bytes memory data)
+        external
+        onlyRole(MARKET_ROLE)
+        nonReentrant
+    {
         _mint(to, id, amount, data);
         uint256 marketId = id / 2;
         // forge-lint: disable-next-line(unsafe-typecast)
@@ -95,11 +87,7 @@ contract OutcomeToken is ERC1155, AccessControl, ReentrancyGuard {
     /// @param from   Address whose tokens will be burned
     /// @param id     ERC-1155 token ID
     /// @param amount Number of tokens to burn
-    function burn(
-        address from,
-        uint256 id,
-        uint256 amount
-    ) external onlyRole(MARKET_ROLE) nonReentrant {
+    function burn(address from, uint256 id, uint256 amount) external onlyRole(MARKET_ROLE) nonReentrant {
         _burn(from, id, amount);
         uint256 marketId = id / 2;
         // forge-lint: disable-next-line(unsafe-typecast)
@@ -113,12 +101,11 @@ contract OutcomeToken is ERC1155, AccessControl, ReentrancyGuard {
     /// @param ids     Array of ERC-1155 token IDs
     /// @param amounts Array of amounts (parallel to ids)
     /// @param data    Forwarded to ERC-1155 receiver hook
-    function mintBatch(
-        address to,
-        uint256[] memory ids,
-        uint256[] memory amounts,
-        bytes memory data
-    ) external onlyRole(MARKET_ROLE) nonReentrant {
+    function mintBatch(address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data)
+        external
+        onlyRole(MARKET_ROLE)
+        nonReentrant
+    {
         _mintBatch(to, ids, amounts, data);
         for (uint256 i = 0; i < ids.length; ++i) {
             uint256 marketId = ids[i] / 2;
@@ -126,14 +113,13 @@ contract OutcomeToken is ERC1155, AccessControl, ReentrancyGuard {
             emit OutcomeMinted(marketId, to, outcome, amounts[i]);
         }
     }
+
     // Interface support
 
     /// @notice Checks interface support (ERC-1155 + AccessControl)
     /// @param interfaceId ERC-165 interface identifier
     /// @return True if the interface is supported
-    function supportsInterface(
-        bytes4 interfaceId
-    ) public view override(ERC1155, AccessControl) returns (bool) {
+    function supportsInterface(bytes4 interfaceId) public view override(ERC1155, AccessControl) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 }

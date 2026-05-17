@@ -1,4 +1,4 @@
-﻿// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
@@ -45,6 +45,7 @@ contract AccessControlFixed is AccessControl {
 
     /// @notice Emitted when a market is resolved
     event MarketResolved(uint256 indexed marketId, uint8 winningOutcome);
+
     // Constructor
 
     /// @notice Grants DEFAULT_ADMIN_ROLE (and optionally RESOLVER_ROLE) to admin
@@ -53,24 +54,22 @@ contract AccessControlFixed is AccessControl {
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
         _grantRole(RESOLVER_ROLE, admin);
     }
+
     // Setup helpers
 
     /// @notice Creates a demo market (restricted to DEFAULT_ADMIN_ROLE)
     /// @param marketId       Market identifier
     /// @param resolutionTime Earliest resolution timestamp
     /// @param mockPrice      Initial mock oracle price
-    function createMarket(
-        uint256 marketId,
-        uint256 resolutionTime,
-        int256 mockPrice
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function createMarket(uint256 marketId, uint256 resolutionTime, int256 mockPrice)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
         markets[marketId] = Market({
-            resolutionTime:  resolutionTime,
-            resolved:        false,
-            winningOutcome:  0,
-            mockOraclePrice: mockPrice
+            resolutionTime: resolutionTime, resolved: false, winningOutcome: 0, mockOraclePrice: mockPrice
         });
     }
+
     // FIXED function - role-gated + timestamp-guarded
 
     /// @notice FIXED: only RESOLVER_ROLE after resolutionTime can resolve a market
@@ -78,9 +77,7 @@ contract AccessControlFixed is AccessControl {
     ///         Fix 2 - timestamp guard: resolving before resolutionTime is blocked.
     ///         Both checks occur before any state change (Checks-Effects pattern).
     /// @param marketId Target market to resolve
-    function resolveMarket(
-        uint256 marketId
-    ) external onlyRole(RESOLVER_ROLE) {
+    function resolveMarket(uint256 marketId) external onlyRole(RESOLVER_ROLE) {
         Market storage market = markets[marketId];
 
         // OK: CHECK 1: not already resolved
@@ -94,7 +91,7 @@ contract AccessControlFixed is AccessControl {
         uint8 winningOutcome = (market.mockOraclePrice > 0) ? 1 : 2;
 
         // OK: EFFECTS: update state before any interactions
-        market.resolved       = true;
+        market.resolved = true;
         market.winningOutcome = winningOutcome;
 
         emit MarketResolved(marketId, winningOutcome);

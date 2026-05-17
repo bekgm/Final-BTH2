@@ -1,8 +1,7 @@
-﻿// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {TimelockController} from
-    "@openzeppelin/contracts/governance/TimelockController.sol";
+import {TimelockController} from "@openzeppelin/contracts/governance/TimelockController.sol";
 
 /// @title GovernorTimelock
 /// @notice TimelockController that enforces a minimum delay between governance
@@ -21,10 +20,7 @@ contract GovernorTimelock is TimelockController {
     /// @param proposers  Addresses that can queue operations (usually [governor])
     /// @param executors  Addresses that can execute (pass [address(0)] for open)
     /// @param admin      Address receiving DEFAULT_ADMIN_ROLE (renounce after setup)
-    constructor(
-        uint256 minDelay,
-        address[] memory proposers,
-        address[] memory executors,
-        address admin
-    ) TimelockController(minDelay, proposers, executors, admin) {}
+    constructor(uint256 minDelay, address[] memory proposers, address[] memory executors, address admin)
+        TimelockController(minDelay, proposers, executors, admin)
+    {}
 }

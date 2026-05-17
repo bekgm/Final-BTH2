@@ -1,8 +1,7 @@
-﻿// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {AggregatorV3Interface} from
-    "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
+import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
 
 /// @title MockAggregator
 /// @notice Test-only implementation of AggregatorV3Interface.
@@ -24,6 +23,7 @@ contract MockAggregator is AggregatorV3Interface {
 
     /// @dev Monotonically increasing round counter
     uint80 private _roundId;
+
     // Constructor
 
     /// @notice Initialises the mock aggregator with an answer and decimal count
@@ -35,6 +35,7 @@ contract MockAggregator is AggregatorV3Interface {
         _decimals = decimals_;
         _roundId = 1;
     }
+
     // Setter helpers (test use only)
 
     /// @notice Updates the mock price and stamps updatedAt to block.timestamp
@@ -51,6 +52,7 @@ contract MockAggregator is AggregatorV3Interface {
     function setUpdatedAt(uint256 timestamp) external {
         _updatedAt = timestamp;
     }
+
     // AggregatorV3Interface implementation
 
     /// @notice Returns the feed's decimal precision
@@ -79,19 +81,11 @@ contract MockAggregator is AggregatorV3Interface {
     /// @return startedAt     0
     /// @return updatedAt     0
     /// @return answeredInRound 0
-    function getRoundData(
-        uint80 roundId_
-    )
+    function getRoundData(uint80 roundId_)
         external
         pure
         override
-        returns (
-            uint80 roundId,
-            int256 answer,
-            uint256 startedAt,
-            uint256 updatedAt,
-            uint80 answeredInRound
-        )
+        returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)
     {
         return (roundId_, 0, 0, 0, 0);
     }
@@ -106,13 +100,7 @@ contract MockAggregator is AggregatorV3Interface {
         external
         view
         override
-        returns (
-            uint80 roundId,
-            int256 answer,
-            uint256 startedAt,
-            uint256 updatedAt,
-            uint80 answeredInRound
-        )
+        returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)
     {
         return (_roundId, _answer, _updatedAt, _updatedAt, _roundId);
     }

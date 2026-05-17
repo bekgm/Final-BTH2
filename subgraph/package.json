@@ -1,0 +1,22 @@
+{
+  "name": "subgraph",
+  "version": "1.0.0",
+  "description": "Prediction Protocol subgraph",
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "deploy": "graph deploy",
+    "test": "echo \"No tests configured\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@graphprotocol/graph-ts": "^0.38.2"
+  },
+  "devDependencies": {
+    "@graphprotocol/graph-cli": "^0.97.0"
+  },
+  "main": "index.js"
+}

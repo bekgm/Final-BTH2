@@ -1,4 +1,4 @@
-﻿// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 /// @title AccessControlVulnerable
@@ -34,24 +34,19 @@ contract AccessControlVulnerable {
 
     /// @notice Emitted when a market is resolved
     event MarketResolved(uint256 indexed marketId, uint8 winningOutcome);
+
     // Setup helpers
 
     /// @notice Creates a demo market (no access control for simplicity)
     /// @param marketId       Market identifier
     /// @param resolutionTime Earliest resolution timestamp
     /// @param mockPrice      Initial mock oracle price
-    function createMarket(
-        uint256 marketId,
-        uint256 resolutionTime,
-        int256 mockPrice
-    ) external {
+    function createMarket(uint256 marketId, uint256 resolutionTime, int256 mockPrice) external {
         markets[marketId] = Market({
-            resolutionTime:  resolutionTime,
-            resolved:        false,
-            winningOutcome:  0,
-            mockOraclePrice: mockPrice
+            resolutionTime: resolutionTime, resolved: false, winningOutcome: 0, mockOraclePrice: mockPrice
         });
     }
+
     // VULNERABLE function - DO NOT USE
 
     /// @notice VULNERABLE: no access control - anyone can resolve any market
@@ -69,7 +64,7 @@ contract AccessControlVulnerable {
         uint8 winningOutcome = (market.mockOraclePrice > 0) ? 1 : 2;
 
         // State update
-        market.resolved       = true;
+        market.resolved = true;
         market.winningOutcome = winningOutcome;
 
         emit MarketResolved(marketId, winningOutcome);

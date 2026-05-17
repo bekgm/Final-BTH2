@@ -1,4 +1,4 @@
-﻿// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
@@ -29,6 +29,7 @@ contract ReentrancyFixed is ReentrancyGuard {
 
     /// @notice Emitted when a winning redemption succeeds
     event WinningsRedeemed(uint256 indexed marketId, address indexed redeemer, uint256 amount);
+
     // Setup helpers
 
     /// @notice Seeds a user's winning balance (stand-in for actual token minting)
@@ -37,9 +38,10 @@ contract ReentrancyFixed is ReentrancyGuard {
     /// @param amount   Winning token balance to assign
     function seedBalance(uint256 marketId, address user, uint256 amount) external payable {
         winningBalances[marketId][user] += amount;
-        totalWinningSupply[marketId]    += amount;
-        totalCollateral[marketId]       += msg.value;
+        totalWinningSupply[marketId] += amount;
+        totalCollateral[marketId] += msg.value;
     }
+
     // FIXED function - CEI + nonReentrant
 
     /// @notice FIXED: follows Checks-Effects-Interactions; protected by nonReentrant
@@ -54,18 +56,17 @@ contract ReentrancyFixed is ReentrancyGuard {
         uint256 userBalance = winningBalances[marketId][msg.sender];
         require(userBalance > 0, "no balance");
 
-        uint256 payout = (userBalance * totalCollateral[marketId])
-            / totalWinningSupply[marketId];
+        uint256 payout = (userBalance * totalCollateral[marketId]) / totalWinningSupply[marketId];
 
         // OK: (B) EFFECTS - zero balance and update totals BEFORE external call
         winningBalances[marketId][msg.sender] = 0;
-        totalCollateral[marketId]       -= payout;
-        totalWinningSupply[marketId]    -= userBalance;
+        totalCollateral[marketId] -= payout;
+        totalWinningSupply[marketId] -= userBalance;
 
         emit WinningsRedeemed(marketId, msg.sender, payout);
 
         // OK: (C) INTERACTIONS - ETH transfer happens LAST
-        (bool success, ) = msg.sender.call{value: payout}("");
+        (bool success,) = msg.sender.call{value: payout}("");
         require(success, "transfer failed");
     }
 

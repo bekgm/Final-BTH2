@@ -1,0 +1,49 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "internalType": "uint256", "name": "marketId", "type": "uint256" },
+      { "indexed": false, "internalType": "string", "name": "question", "type": "string" },
+      { "indexed": true, "internalType": "address", "name": "creator", "type": "address" },
+      { "indexed": false, "internalType": "address", "name": "oracleFeed", "type": "address" }
+    ],
+    "name": "MarketCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "internalType": "uint256", "name": "marketId", "type": "uint256" },
+      { "indexed": false, "internalType": "uint8", "name": "winningOutcome", "type": "uint8" }
+    ],
+    "name": "MarketResolved",
+    "type": "event"
+  },
+  {
+    "inputs": [ { "internalType": "uint256", "name": "marketId", "type": "uint256" } ],
+    "name": "getMarket",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "uint256", "name": "id", "type": "uint256" },
+          { "internalType": "string", "name": "question", "type": "string" },
+          { "internalType": "address", "name": "collateralToken", "type": "address" },
+          { "internalType": "address", "name": "oracleFeed", "type": "address" },
+          { "internalType": "uint256", "name": "resolutionTime", "type": "uint256" },
+          { "internalType": "uint8", "name": "winningOutcome", "type": "uint8" },
+          { "internalType": "bool", "name": "resolved", "type": "bool" },
+          { "internalType": "uint256", "name": "totalCollateral", "type": "uint256" },
+          { "internalType": "uint256", "name": "yesReserve", "type": "uint256" },
+          { "internalType": "uint256", "name": "noReserve", "type": "uint256" },
+          { "internalType": "uint256", "name": "feesAccrued", "type": "uint256" },
+          { "internalType": "address", "name": "creator", "type": "address" }
+        ],
+        "internalType": "struct IPredictionMarket.Market",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

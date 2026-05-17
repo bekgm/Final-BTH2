@@ -1,0 +1,47 @@
+services:
+  ipfs:
+    image: ipfs/go-ipfs:v0.18.1
+    ports:
+      - '5001:5001'
+    volumes:
+      - ipfs-data:/data/ipfs
+
+  postgres:
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_USER: graph-node
+      POSTGRES_PASSWORD: letmein
+      POSTGRES_DB: graph-node
+      POSTGRES_INITDB_ARGS: --locale=C --encoding=UTF8
+    command:
+      - postgres
+      - -cshared_preload_libraries=pg_stat_statements
+      - -cmax_connections=200
+    ports:
+      - '5432:5432'
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+  graph-node:
+    image: graphprotocol/graph-node:v0.38.0
+    depends_on:
+      - ipfs
+      - postgres
+    ports:
+      - '8000:8000'
+      - '8001:8001'
+      - '8020:8020'
+      - '8030:8030'
+      - '8040:8040'
+    environment:
+      postgres_host: postgres
+      postgres_user: graph-node
+      postgres_pass: letmein
+      postgres_db: graph-node
+      ipfs: 'ipfs:5001'
+      ethereum: 'sepolia:http://host.docker.internal:8545'
+      GRAPH_LOG: info
+
+volumes:
+  ipfs-data:
+  pg-data:

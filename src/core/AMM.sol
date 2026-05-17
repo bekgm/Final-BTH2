@@ -1,4 +1,4 @@
-﻿// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 /// @title AMM
@@ -20,6 +20,7 @@ library AMM {
 
     /// @notice Reverts when amountOut would equal or exceed the output reserve
     error InsufficientOutputReserve();
+
     // Core math
 
     /// @notice Computes output amount given an input, applying the fee
@@ -32,11 +33,11 @@ library AMM {
     /// @param reserveOut Current reserve of the output token
     /// @return amountOut Amount of output token received
     /// @return fee       Fee amount in input token units
-    function getAmountOut(
-        uint256 amountIn,
-        uint256 reserveIn,
-        uint256 reserveOut
-    ) internal pure returns (uint256 amountOut, uint256 fee) {
+    function getAmountOut(uint256 amountIn, uint256 reserveIn, uint256 reserveOut)
+        internal
+        pure
+        returns (uint256 amountOut, uint256 fee)
+    {
         if (reserveIn == 0 || reserveOut == 0) revert ZeroReserve();
         fee = (amountIn * FEE_BPS) / BPS;
         uint256 amountInAfterFee = amountIn - fee;
@@ -52,11 +53,11 @@ library AMM {
     /// @param reserveIn  Current reserve of the input token
     /// @param reserveOut Current reserve of the output token
     /// @return amountIn  Required input amount (inclusive of fee, rounded up)
-    function getAmountIn(
-        uint256 amountOut,
-        uint256 reserveIn,
-        uint256 reserveOut
-    ) internal pure returns (uint256 amountIn) {
+    function getAmountIn(uint256 amountOut, uint256 reserveIn, uint256 reserveOut)
+        internal
+        pure
+        returns (uint256 amountIn)
+    {
         if (reserveIn == 0 || reserveOut == 0) revert ZeroReserve();
         if (amountOut >= reserveOut) revert InsufficientOutputReserve();
         // Numerator and denominator for the gross-input calculation
@@ -75,12 +76,7 @@ library AMM {
     /// @param newX New reserve of token X
     /// @param newY New reserve of token Y
     /// @return True when the invariant holds
-    function checkInvariant(
-        uint256 oldX,
-        uint256 oldY,
-        uint256 newX,
-        uint256 newY
-    ) internal pure returns (bool) {
+    function checkInvariant(uint256 oldX, uint256 oldY, uint256 newX, uint256 newY) internal pure returns (bool) {
         // Unchecked: if either product wraps the comparison still yields the
         // correct result because we only need >= under modular arithmetic for
         // the same bit-width; practically reserves never reach sqrt(2^256).
@@ -95,10 +91,7 @@ library AMM {
     /// @param reserveIn  Reserve of the token being provided (e.g., NO when buying YES)
     /// @param reserveOut Reserve of the token being received (e.g., YES when buying YES)
     /// @return price Spot price in 1e18 units (range: 0 < price < 1e18)
-    function spotPrice(
-        uint256 reserveIn,
-        uint256 reserveOut
-    ) internal pure returns (uint256 price) {
+    function spotPrice(uint256 reserveIn, uint256 reserveOut) internal pure returns (uint256 price) {
         if (reserveIn == 0 || reserveOut == 0) revert ZeroReserve();
         price = (reserveOut * 1e18) / (reserveIn + reserveOut);
     }
