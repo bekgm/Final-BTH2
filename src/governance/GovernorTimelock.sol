@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+﻿// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 import {TimelockController} from
@@ -7,11 +7,11 @@ import {TimelockController} from
 /// @title GovernorTimelock
 /// @notice TimelockController that enforces a minimum delay between governance
 ///         proposal queueing and execution. Wraps OZ TimelockController with
-///         no additional logic — the protocol uses the standard OZ roles:
-///           PROPOSER_ROLE  → granted to PredictionGovernor
-///           EXECUTOR_ROLE  → granted to address(0) (anyone can execute)
-///           CANCELLER_ROLE → granted to admin at deploy time
-///           DEFAULT_ADMIN_ROLE → granted to admin (can manage roles)
+///         no additional logic - the protocol uses the standard OZ roles:
+///           PROPOSER_ROLE  -> granted to PredictionGovernor
+///           EXECUTOR_ROLE  -> granted to address(0) (anyone can execute)
+///           CANCELLER_ROLE -> granted to admin at deploy time
+///           DEFAULT_ADMIN_ROLE -> granted to admin (can manage roles)
 /// @dev    Deploy this first, then deploy PredictionGovernor and grant it
 ///         PROPOSER_ROLE via grantRole(PROPOSER_ROLE, governorAddress).
 /// @custom:security-contact security@predictionprotocol.xyz

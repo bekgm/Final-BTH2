@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: MIT
+﻿// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /// @title ReentrancyFixed
-/// @notice AUDIT CASE STUDY — Fixed version of ReentrancyVulnerable.sol.
+/// @notice AUDIT CASE STUDY - Fixed version of ReentrancyVulnerable.sol.
 ///         Demonstrates correct Checks-Effects-Interactions pattern combined
 ///         with OpenZeppelin's ReentrancyGuard as defence-in-depth.
 /// @dev    Two mitigations are applied:
@@ -17,7 +17,7 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol
 contract ReentrancyFixed is ReentrancyGuard {
     // State
 
-    /// @dev Winning token balances (marketId → user → amount)
+    /// @dev Winning token balances (marketId -> user -> amount)
     mapping(uint256 => mapping(address => uint256)) public winningBalances;
 
     /// @dev Total ETH collateral backing each market
@@ -40,31 +40,31 @@ contract ReentrancyFixed is ReentrancyGuard {
         totalWinningSupply[marketId]    += amount;
         totalCollateral[marketId]       += msg.value;
     }
-    // FIXED function — CEI + nonReentrant
+    // FIXED function - CEI + nonReentrant
 
     /// @notice FIXED: follows Checks-Effects-Interactions; protected by nonReentrant
-    /// @dev    Fix 1 — CEI: balance is cleared at step (B, Effects) BEFORE the
+    /// @dev    Fix 1 - CEI: balance is cleared at step (B, Effects) BEFORE the
     ///         ETH transfer at step (C, Interactions). A re-entrant call now hits
     ///         a zero balance at step (A) and reverts harmlessly.
-    ///         Fix 2 — nonReentrant: the OZ mutex immediately reverts any re-entry
+    ///         Fix 2 - nonReentrant: the OZ mutex immediately reverts any re-entry
     ///         regardless of state, providing defence-in-depth.
     /// @param marketId Target market
     function redeemWinningTokens(uint256 marketId) external nonReentrant {
-        // (A) CHECKS — validate user has a balance
+        // (A) CHECKS - validate user has a balance
         uint256 userBalance = winningBalances[marketId][msg.sender];
         require(userBalance > 0, "no balance");
 
         uint256 payout = (userBalance * totalCollateral[marketId])
             / totalWinningSupply[marketId];
 
-        // ✅ (B) EFFECTS — zero balance and update totals BEFORE external call
+        // OK: (B) EFFECTS - zero balance and update totals BEFORE external call
         winningBalances[marketId][msg.sender] = 0;
         totalCollateral[marketId]       -= payout;
         totalWinningSupply[marketId]    -= userBalance;
 
         emit WinningsRedeemed(marketId, msg.sender, payout);
 
-        // ✅ (C) INTERACTIONS — ETH transfer happens LAST
+        // OK: (C) INTERACTIONS - ETH transfer happens LAST
         (bool success, ) = msg.sender.call{value: payout}("");
         require(success, "transfer failed");
     }

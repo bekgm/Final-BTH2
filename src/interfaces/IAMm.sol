@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: MIT
+﻿// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 /// @title IAMm
 /// @notice Interface for the AMM library used in prediction markets
-/// @dev All functions are pure — no state reads or writes
+/// @dev All functions are pure - no state reads or writes
 interface IAMm {
     /// @notice Computes the output amount given an input amount and reserves
     /// @param amountIn   Amount of input token

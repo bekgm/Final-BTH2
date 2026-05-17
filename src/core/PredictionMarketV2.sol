@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+﻿// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 import {PredictionMarket} from "./PredictionMarket.sol";
@@ -11,16 +11,16 @@ import {FeeVault} from "../vault/FeeVault.sol";
 
 /// @title PredictionMarketV2
 /// @notice Upgraded implementation of PredictionMarket with a governable fee rate
-/// @dev    Demonstrates a real V1→V2 upgrade path:
-///           • Adds `version` storage variable (initialised to 2 via reinitializer)
-///           • Adds `feeBps` governable fee (replaces the V1 FEE_BPS constant)
-///           • Overrides `buy()` to use the new dynamic fee
+/// @dev    Demonstrates a real V1->V2 upgrade path:
+///           - Adds `version` storage variable (initialised to 2 via reinitializer)
+///           - Adds `feeBps` governable fee (replaces the V1 FEE_BPS constant)
+///           - Overrides `buy()` to use the new dynamic fee
 ///         Storage layout rule: new variables are appended AFTER the V1 __gap.
 ///         The __gap in PredictionMarket is reduced by the number of slots used here.
 /// @custom:security-contact security@predictionprotocol.xyz
 contract PredictionMarketV2 is PredictionMarket {
     using SafeERC20 for IERC20;
-    // New V2 storage (appended after V1 __gap — upgrade safe)
+    // New V2 storage (appended after V1 __gap - upgrade safe)
 
     /// @notice Semantic version set to 2 during initializeV2()
     uint256 public version;
@@ -42,7 +42,7 @@ contract PredictionMarketV2 is PredictionMarket {
     // Re-initializer
 
     /// @notice Upgrades a V1 proxy to V2 state
-    /// @dev    Uses reinitializer(2) — can only be called once per proxy after V1.
+    /// @dev    Uses reinitializer(2) - can only be called once per proxy after V1.
     ///         Sets version = 2 and feeBps = 30 (same default as V1 constant).
     function initializeV2() public reinitializer(2) {
         version = 2;
@@ -53,21 +53,21 @@ contract PredictionMarketV2 is PredictionMarket {
     /// @notice Updates the protocol fee rate
     /// @dev    Only DEFAULT_ADMIN_ROLE (set by governance via Timelock).
     ///         Maximum allowed fee is 100 bps (1%) to protect traders.
-    /// @param newFee New fee in basis points (0–100 inclusive)
+    /// @param newFee New fee in basis points (0-100 inclusive)
     function setFeeBps(uint256 newFee) external onlyRole(DEFAULT_ADMIN_ROLE) {
         if (newFee > 100) revert FeeTooHigh(newFee);
         uint256 oldFee = feeBps;
         feeBps = newFee;
         emit FeeBpsUpdated(oldFee, newFee);
     }
-    // Overridden buy() — uses dynamic feeBps instead of FEE_BPS constant
+    // Overridden buy() - uses dynamic feeBps instead of FEE_BPS constant
 
     /// @notice Buys outcome tokens using USDC, applying the dynamic fee rate
     /// @dev    Identical logic to V1 buy() except FEE_BPS is replaced with feeBps.
     ///         CEI pattern:
     ///           Checks (market state, outcome validity, slippage)
-    ///           → Effects (reserve update, fee accrual)
-    ///           → Interactions (pull USDC, send fee, transfer outcome tokens)
+    ///           -> Effects (reserve update, fee accrual)
+    ///           -> Interactions (pull USDC, send fee, transfer outcome tokens)
     /// @param marketId     Target market ID
     /// @param outcome      1 = YES, 2 = NO
     /// @param amountIn     USDC amount to spend (must be pre-approved)

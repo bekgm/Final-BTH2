@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: MIT
+﻿// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 /// @title AMM
 /// @notice Pure library implementing CPMM (constant-product market maker) math
-/// @dev All functions are internal pure — no state reads, no external calls.
+/// @dev All functions are internal pure - no state reads, no external calls.
 ///      Used by PredictionMarket for buy/sell price computation.
 library AMM {
     // Constants
@@ -68,7 +68,7 @@ library AMM {
 
     /// @notice Verifies that the constant-product invariant is preserved
     /// @dev Returns true if newX * newY >= oldX * oldY.
-    ///      Uses unchecked to avoid overflow revert — callers should ensure
+    ///      Uses unchecked to avoid overflow revert - callers should ensure
     ///      values fit within uint256 product range, or the overflow wraps.
     /// @param oldX Old reserve of token X (e.g., yesReserve before trade)
     /// @param oldY Old reserve of token Y (e.g., noReserve before trade)

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+﻿// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
@@ -56,7 +56,7 @@ contract OracleAdapter is AccessControl, IOracleAdapter {
     }
 
     /// @notice Returns whether the feed's latest data is considered stale
-    /// @dev Does NOT revert — callers can use this for soft checks.
+    /// @dev Does NOT revert - callers can use this for soft checks.
     ///      A feed is stale if updatedAt < block.timestamp - maxAge.
     /// @param feed   Chainlink AggregatorV3Interface feed address
     /// @param maxAge Maximum acceptable age in seconds

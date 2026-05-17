@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+﻿// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 import {ERC4626} from "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
@@ -17,10 +17,10 @@ import {IFeeVault} from "../interfaces/IFeeVault.sol";
 ///         All standard ERC-4626 deposit/withdraw/redeem functions are
 ///         inherited from OpenZeppelin's ERC4626.
 ///         Rounding invariants follow ERC-4626 spec:
-///           - previewDeposit  → round DOWN (shares)
-///           - previewMint     → round UP   (assets)
-///           - previewWithdraw → round UP   (shares)
-///           - previewRedeem   → round DOWN (assets)
+///           - previewDeposit  -> round DOWN (shares)
+///           - previewMint     -> round UP   (assets)
+///           - previewWithdraw -> round UP   (shares)
+///           - previewRedeem   -> round DOWN (assets)
 /// @custom:security-contact security@predictionprotocol.xyz
 contract FeeVault is ERC4626, AccessControl, ReentrancyGuard, IFeeVault {
     using SafeERC20 for IERC20;
@@ -42,7 +42,7 @@ contract FeeVault is ERC4626, AccessControl, ReentrancyGuard, IFeeVault {
     {
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
     }
-    // IFeeVault — fee deposit entry-point
+    // IFeeVault - fee deposit entry-point
 
     /// @notice Accepts protocol fees from an authorised PredictionMarket contract
     /// @dev    Pulls `amount` USDC from msg.sender (caller must have pre-approved

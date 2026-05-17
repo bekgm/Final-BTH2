@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: MIT
+﻿// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 /// @title AccessControlVulnerable
-/// @notice AUDIT CASE STUDY — Demonstrates a missing access control vulnerability
+/// @notice AUDIT CASE STUDY - Demonstrates a missing access control vulnerability
 ///         in a simplified resolveMarket function that has NO role check.
 ///         DO NOT USE IN PRODUCTION.
 /// @dev    The bug: resolveMarket() can be called by ANY address (including
@@ -28,7 +28,7 @@ contract AccessControlVulnerable {
         int256 mockOraclePrice; // simplified: set by admin in tests
     }
 
-    /// @dev marketId → Market
+    /// @dev marketId -> Market
     mapping(uint256 => Market) public markets;
     // Events
 
@@ -52,9 +52,9 @@ contract AccessControlVulnerable {
             mockOraclePrice: mockPrice
         });
     }
-    // VULNERABLE function — DO NOT USE
+    // VULNERABLE function - DO NOT USE
 
-    /// @notice VULNERABLE: no access control — anyone can resolve any market
+    /// @notice VULNERABLE: no access control - anyone can resolve any market
     /// @dev    BUG: There is no msg.sender authorization check of any kind.
     ///         Any externally owned account or contract can call this function
     ///         at any time (even before resolutionTime) and force a resolution.
@@ -63,8 +63,8 @@ contract AccessControlVulnerable {
     function resolveMarket(uint256 marketId) external {
         Market storage market = markets[marketId];
         require(!market.resolved, "already resolved");
-        // ❌ NO CHECK: block.timestamp >= market.resolutionTime
-        // ❌ NO CHECK: msg.sender has RESOLVER_ROLE or any role at all
+        // BAD: NO CHECK: block.timestamp >= market.resolutionTime
+        // BAD: NO CHECK: msg.sender has RESOLVER_ROLE or any role at all
 
         uint8 winningOutcome = (market.mockOraclePrice > 0) ? 1 : 2;
 

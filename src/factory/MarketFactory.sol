@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+﻿// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
@@ -27,7 +27,7 @@ contract MarketFactory is AccessControl {
     /// @notice Array of all deployed market proxy addresses in creation order
     address[] public allMarkets;
 
-    /// @notice Maps CREATE2 salt → deployed proxy address (address(0) if unused)
+    /// @notice Maps CREATE2 salt -> deployed proxy address (address(0) if unused)
     mapping(bytes32 => address) public saltToMarket;
     // Immutable deploy parameters forwarded to every proxy initializer
 
@@ -118,7 +118,7 @@ contract MarketFactory is AccessControl {
     ///         Reverts with SaltAlreadyUsed if the salt has been used before.
     ///         The initializer is encoded as initialize(_usdc, _outcomeToken,
     ///         _feeVault, _oracleAdapter, _marketAdmin) from the factory's
-    ///         stored addresses — the proxy then calls createMarket() to seed it.
+    ///         stored addresses - the proxy then calls createMarket() to seed it.
     /// @param question Market question string (emitted in MarketDeployed event for indexing)
     /// @param salt     Unique bytes32 for CREATE2 address derivation
     /// @return proxy   Address of the deployed ERC1967Proxy

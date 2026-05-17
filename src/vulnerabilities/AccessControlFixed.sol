@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: MIT
+﻿// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
 /// @title AccessControlFixed
-/// @notice AUDIT CASE STUDY — Fixed version of AccessControlVulnerable.sol.
+/// @notice AUDIT CASE STUDY - Fixed version of AccessControlVulnerable.sol.
 ///         Demonstrates proper role-based access control using OpenZeppelin
 ///         AccessControl on a simplified resolveMarket function.
 /// @dev    Two fixes are applied:
@@ -39,7 +39,7 @@ contract AccessControlFixed is AccessControl {
         int256 mockOraclePrice;
     }
 
-    /// @dev marketId → Market
+    /// @dev marketId -> Market
     mapping(uint256 => Market) public markets;
     // Events
 
@@ -71,11 +71,11 @@ contract AccessControlFixed is AccessControl {
             mockOraclePrice: mockPrice
         });
     }
-    // FIXED function — role-gated + timestamp-guarded
+    // FIXED function - role-gated + timestamp-guarded
 
     /// @notice FIXED: only RESOLVER_ROLE after resolutionTime can resolve a market
-    /// @dev    Fix 1 — onlyRole(RESOLVER_ROLE): any caller without the role reverts.
-    ///         Fix 2 — timestamp guard: resolving before resolutionTime is blocked.
+    /// @dev    Fix 1 - onlyRole(RESOLVER_ROLE): any caller without the role reverts.
+    ///         Fix 2 - timestamp guard: resolving before resolutionTime is blocked.
     ///         Both checks occur before any state change (Checks-Effects pattern).
     /// @param marketId Target market to resolve
     function resolveMarket(
@@ -83,17 +83,17 @@ contract AccessControlFixed is AccessControl {
     ) external onlyRole(RESOLVER_ROLE) {
         Market storage market = markets[marketId];
 
-        // ✅ CHECK 1: not already resolved
+        // OK: CHECK 1: not already resolved
         if (market.resolved) revert MarketAlreadyResolved(marketId);
 
-        // ✅ CHECK 2: resolution time has passed
+        // OK: CHECK 2: resolution time has passed
         if (block.timestamp < market.resolutionTime) {
             revert ResolutionTooEarly(market.resolutionTime, block.timestamp);
         }
 
         uint8 winningOutcome = (market.mockOraclePrice > 0) ? 1 : 2;
 
-        // ✅ EFFECTS: update state before any interactions
+        // OK: EFFECTS: update state before any interactions
         market.resolved       = true;
         market.winningOutcome = winningOutcome;
 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+﻿// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 import {UUPSUpgradeable} from
@@ -23,7 +23,7 @@ import {FeeVault} from "../vault/FeeVault.sol";
 
 /// @title PredictionMarket
 /// @notice Core contract for creating and trading in binary prediction markets
-/// @dev    Implements UUPS upgradeable proxy pattern. Storage layout is frozen —
+/// @dev    Implements UUPS upgradeable proxy pattern. Storage layout is frozen -
 ///         new variables must only be added at the END of the storage block.
 ///         Uses CPMM (x*y=k) AMM with 0.3% fee routed to FeeVault (ERC-4626).
 ///         Oracle resolution uses Chainlink feeds via OracleAdapter.
@@ -54,18 +54,18 @@ contract PredictionMarket is
 
     /// @notice Basis-point denominator
     uint256 public constant BPS = 10_000;
-    // Storage — DO NOT reorder; append-only for upgrade safety
+    // Storage - DO NOT reorder; append-only for upgrade safety
 
     /// @dev Auto-incrementing market counter (starts at 1 after first create)
     uint256 internal _marketCount;
 
-    /// @dev marketId → Market struct
+    /// @dev marketId -> Market struct
     mapping(uint256 => Market) internal _markets;
 
-    /// @dev marketId → provider → LP shares
+    /// @dev marketId -> provider -> LP shares
     mapping(uint256 => mapping(address => uint256)) internal _lpShares;
 
-    /// @dev marketId → total LP shares outstanding
+    /// @dev marketId -> total LP shares outstanding
     mapping(uint256 => uint256) internal _totalLpShares;
 
     /// @notice Address of the OutcomeToken (ERC-1155) contract
@@ -259,7 +259,7 @@ contract PredictionMarket is
     /// @notice Adds proportional liquidity to a market's AMM reserves
     /// @dev    Mints LP shares proportional to USDC contribution relative to
     ///         existing totalCollateral. Both YES and NO reserves grow proportionally.
-    ///         CEI: slippage check → effects (shares, reserves) → interactions (pull USDC, mint tokens).
+    ///         CEI: slippage check -> effects (shares, reserves) -> interactions (pull USDC, mint tokens).
     /// @param marketId   Target market
     /// @param usdcAmount USDC to deposit
     /// @param minLpShares Minimum LP shares to receive (slippage protection)
@@ -370,10 +370,10 @@ contract PredictionMarket is
     /// @notice Buys outcome tokens using USDC as input via the CPMM AMM
     /// @dev    CEI pattern:
     ///           Checks (market state, outcome validity, slippage)
-    ///           → Effects (reserve update, fee accrual)
-    ///           → Interactions (pull USDC, send fee, transfer outcome tokens)
-    ///         outcome == 1 → buying YES (NO reserve is the input side)
-    ///         outcome == 2 → buying NO  (YES reserve is the input side)
+    ///           -> Effects (reserve update, fee accrual)
+    ///           -> Interactions (pull USDC, send fee, transfer outcome tokens)
+    ///         outcome == 1 -> buying YES (NO reserve is the input side)
+    ///         outcome == 2 -> buying NO  (YES reserve is the input side)
     /// @param marketId    Target market ID
     /// @param outcome     1 = YES, 2 = NO
     /// @param amountIn    USDC amount to spend (must be pre-approved)
@@ -442,7 +442,7 @@ contract PredictionMarket is
         market.yesReserve   = newYes;
         market.noReserve    = newNo;
         market.feesAccrued += fee;
-        // Tokens move from contract reserve to user — supply stays constant for winning side
+        // Tokens move from contract reserve to user - supply stays constant for winning side
         // No change to _winningSupply: tokens already counted from creation/mint
 
         // --- Interactions ---
@@ -468,8 +468,8 @@ contract PredictionMarket is
     /// @dev    Reverse CPMM: user gives outcome tokens, receives USDC minus fee.
     ///         CEI pattern:
     ///           Checks (market state, outcome, slippage)
-    ///           → Effects (reserve update, fee accrual)
-    ///           → Interactions (burn tokens, send fee, transfer USDC)
+    ///           -> Effects (reserve update, fee accrual)
+    ///           -> Interactions (burn tokens, send fee, transfer USDC)
     /// @param marketId      Target market ID
     /// @param outcome       1 = YES, 2 = NO
     /// @param tokenAmountIn Outcome tokens to sell
@@ -541,7 +541,7 @@ contract PredictionMarket is
         market.yesReserve   = newYes;
         market.noReserve    = newNo;
         market.feesAccrued += fee;
-        // Selling burns tokens from circulation — decrease tracked supply
+        // Selling burns tokens from circulation - decrease tracked supply
         _winningSupply[marketId][outcome] -= tokenAmountIn;
 
         // --- Interactions ---
@@ -565,7 +565,7 @@ contract PredictionMarket is
 
     /// @notice Resolves a market using its Chainlink oracle feed
     /// @dev    Can be called by anyone once resolutionTime has passed and the
-    ///         oracle data is fresh. Price > 0 → YES wins; price == 0 → NO wins.
+    ///         oracle data is fresh. Price > 0 -> YES wins; price == 0 -> NO wins.
     /// @param marketId Target market to resolve
     function resolveMarket(
         uint256 marketId
@@ -597,8 +597,8 @@ contract PredictionMarket is
 
     /// @notice Redeems winning outcome tokens for a proportional USDC payout
     /// @dev    Payout = userBalance * totalCollateral / totalWinningSupply
-    ///         CEI pattern strictly enforced: balance checks → state updates
-    ///         (burn) → USDC transfer.
+    ///         CEI pattern strictly enforced: balance checks -> state updates
+    ///         (burn) -> USDC transfer.
     /// @param marketId Target resolved market
     function redeemWinningTokens(
         uint256 marketId
@@ -624,7 +624,7 @@ contract PredictionMarket is
 
         uint256 payout = (userBalance * market.totalCollateral) / totalWinningSupply;
 
-        // --- Effects (burn before transfer — CEI) ---
+        // --- Effects (burn before transfer - CEI) ---
         market.totalCollateral -= payout;
         _winningSupply[marketId][market.winningOutcome] -= userBalance;
 
@@ -730,14 +730,14 @@ contract PredictionMarket is
     // UUPS upgrade authorisation
 
     /// @notice Authorises a UUPS upgrade to newImplementation
-    /// @dev    Restricted to UPGRADER_ROLE. Empty body — the role check is the guard.
+    /// @dev    Restricted to UPGRADER_ROLE. Empty body - the role check is the guard.
     /// @param newImplementation Address of the new implementation contract
     function _authorizeUpgrade(
         address newImplementation
     ) internal override onlyRole(UPGRADER_ROLE) {}
     // Additional storage (MUST stay at the end for upgrade safety)
 
-    /// @dev marketId → outcome (1/2) → total circulating supply of that outcome token
+    /// @dev marketId -> outcome (1/2) -> total circulating supply of that outcome token
     ///      Updated on every mint/burn path to enable accurate redemption payouts.
     mapping(uint256 => mapping(uint8 => uint256)) internal _winningSupply;
 

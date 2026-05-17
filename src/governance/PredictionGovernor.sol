@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+﻿// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 import {Governor} from "@openzeppelin/contracts/governance/Governor.sol";
@@ -21,16 +21,16 @@ import {TimelockController} from
 ///         Proposals are voted on by PGOV token holders and executed via the
 ///         GovernorTimelock after a mandatory delay.
 /// @dev    Inherits the full OpenZeppelin v5 Governor stack:
-///           • GovernorSettings            — voting delay, period, threshold
-///           • GovernorCountingSimple      — For/Against/Abstain counting
-///           • GovernorVotes               — ERC20Votes snapshot integration
-///           • GovernorVotesQuorumFraction — quorum as % of total supply
-///           • GovernorTimelockControl     — routes execution through Timelock
+///           - GovernorSettings            - voting delay, period, threshold
+///           - GovernorCountingSimple      - For/Against/Abstain counting
+///           - GovernorVotes               - ERC20Votes snapshot integration
+///           - GovernorVotesQuorumFraction - quorum as % of total supply
+///           - GovernorTimelockControl     - routes execution through Timelock
 ///         Clock mode: uses block.timestamp (matching GovernanceToken's clock).
 ///         Override list rules (OZ v5):
-///           - Functions defined in BOTH Governor and one extension → override(Governor, Extension)
-///           - Functions defined ONLY in GovernorTimelockControl    → override alone
-///           - supportsInterface: NOT overridden by GovernorTimelockControl → no override needed
+///           - Functions defined in BOTH Governor and one extension -> override(Governor, Extension)
+///           - Functions defined ONLY in GovernorTimelockControl    -> override alone
+///           - supportsInterface: NOT overridden by GovernorTimelockControl -> no override needed
 /// @custom:security-contact security@predictionprotocol.xyz
 contract PredictionGovernor is
     Governor,
@@ -117,7 +117,7 @@ contract PredictionGovernor is
     }
 
     /// @notice Returns the current state of a proposal
-    /// @dev GovernorTimelockControl overrides Governor.state — both in the chain.
+    /// @dev GovernorTimelockControl overrides Governor.state - both in the chain.
     /// @param proposalId Target proposal identifier
     /// @return Current ProposalState
     function state(
@@ -134,7 +134,7 @@ contract PredictionGovernor is
     /// @notice Returns whether this proposal must be queued before execution
     /// @dev GovernorTimelockControl overrides Governor (IGovernor) definition.
     /// @param proposalId Target proposal identifier
-    /// @return True — all proposals go through the timelock queue
+    /// @return True - all proposals go through the timelock queue
     function proposalNeedsQueuing(
         uint256 proposalId
     )

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+﻿// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
@@ -69,7 +69,7 @@ contract GovernanceToken is ERC20, ERC20Votes, ERC20Permit, AccessControl {
     function CLOCK_MODE() public pure override returns (string memory) {
         return "mode=timestamp";
     }
-    // Internal hook — OZ v5 pattern
+    // Internal hook - OZ v5 pattern
 
     /// @notice Hook called on every token transfer, mint, and burn
     /// @dev Calls both ERC20._update (balance accounting) and

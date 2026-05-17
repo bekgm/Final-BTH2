@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+﻿// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 /// @title IPredictionMarket
@@ -208,7 +208,7 @@ interface IPredictionMarket {
     /// @notice Returns the AMM spot price of an outcome token
     /// @param marketId Target market
     /// @param outcome  1 = YES, 2 = NO
-    /// @return price   Price in 1e18 fixed-point (0–1e18)
+    /// @return price   Price in 1e18 fixed-point (0-1e18)
     function getPrice(
         uint256 marketId,
         uint8 outcome
