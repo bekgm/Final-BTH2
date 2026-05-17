@@ -429,7 +429,6 @@ MIT License - see [LICENSE](LICENSE) for details
 
 ---
 
-**Deployed by**: Development Team  
+
 **Deployment Date**: May 2026  
 **Network**: Base Sepolia (84532)  
-**Protocol Version**: v1.0.0
