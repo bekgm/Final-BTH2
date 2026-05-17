@@ -14,3 +14,7 @@
 	path = lib/solmate
 	url = https://github.com/transmissions11/solmate
 	branch = main
+[submodule "lib/openzeppelin-contracts-upgradeable/lib/erc4626-tests"]
+	path = lib/openzeppelin-contracts-upgradeable/lib/erc4626-tests
+	url = https://github.com/a16z/erc4626-tests
+	branch = main
