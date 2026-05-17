@@ -14,5 +14,6 @@ runs = 1000
 runs = 256
 depth = 15
 
-[etherscan]
-base-sepolia = { key = "${BASESCAN_API_KEY}", url = "https://api-sepolia.basescan.org/api" }
+[etherscan.base-sepolia]
+key = "${BASESCAN_API_KEY}"
+url = "https://api-sepolia.basescan.org/api"
