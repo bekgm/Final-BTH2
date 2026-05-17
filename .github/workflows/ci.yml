@@ -8,7 +8,7 @@ on:
 
 jobs:
   contracts:
-    name: Contracts: forge test
+    name: "Contracts: forge test"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,7 +30,7 @@ jobs:
           forge test --no-ansi
 
   coverage:
-    name: Contracts: forge coverage
+    name: "Contracts: forge coverage"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -58,7 +58,7 @@ jobs:
           path: lcov.info
 
   slither:
-    name: Contracts: Slither analysis
+    name: "Contracts: Slither analysis"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -81,7 +81,7 @@ jobs:
         continue-on-error: true
 
   frontend:
-    name: Frontend: build & typecheck
+    name: "Frontend: build & typecheck"
     runs-on: ubuntu-latest
     needs: contracts
     steps:
@@ -106,7 +106,7 @@ jobs:
           npm run build
 
   subgraph:
-    name: Subgraph: codegen & build
+    name: "Subgraph: codegen & build"
     runs-on: ubuntu-latest
     needs: contracts
     steps:
