@@ -7,10 +7,12 @@ import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
 import "src/tokens/OutcomeToken.sol";
 import "src/vault/FeeVault.sol";
+import "src/oracle/OracleAdapter.sol";
+import "src/oracle/MockAggregator.sol";
 import "src/core/PredictionMarket.sol";
 
 contract DeployScript is Script {
-    function run() external returns (address) {
+    function run() external returns (address proxy) {
         uint256 deployerKey = vm.envUint("PRIVATE_KEY");
         require(deployerKey != 0, "PRIVATE_KEY env required");
         address deployer = vm.addr(deployerKey);
@@ -18,37 +20,50 @@ contract DeployScript is Script {
         address usdc = vm.envAddress("USDC");
         require(usdc != address(0), "USDC env required");
 
-        address oracleAdapter = vm.envAddress("ORACLE_ADAPTER");
-        require(oracleAdapter != address(0), "ORACLE_ADAPTER env required");
-
         vm.startBroadcast(deployerKey);
 
-        OutcomeToken outcomeToken = new OutcomeToken(deployer, "");
-        FeeVault feeVault = new FeeVault(usdc, deployer);
+        // 1. Deploy MockAggregator (testnet: no real Chainlink feed needed)
+        // constructor(int256 initialAnswer, uint8 decimals_)
+        MockAggregator mockFeed = new MockAggregator(200000000000, 8); // $2000 with 8 decimals
+        console.log("MockAggregator:", address(mockFeed));
 
+        // 2. Deploy OracleAdapter
+        OracleAdapter oracle = new OracleAdapter(deployer);
+        console.log("OracleAdapter:", address(oracle));
+
+        // 3. Deploy OutcomeToken (ERC-1155)
+        OutcomeToken outcomeToken = new OutcomeToken(deployer, "");
+        console.log("OutcomeToken:", address(outcomeToken));
+
+        // 4. Deploy FeeVault (ERC-4626)
+        FeeVault feeVault = new FeeVault(usdc, deployer);
+        console.log("FeeVault:", address(feeVault));
+
+        // 5. Deploy PredictionMarket implementation + ERC1967 proxy
         PredictionMarket impl = new PredictionMarket();
+        console.log("PredictionMarket impl:", address(impl));
 
         bytes memory initData = abi.encodeWithSelector(
             PredictionMarket.initialize.selector,
             usdc,
             address(outcomeToken),
             address(feeVault),
-            oracleAdapter,
+            address(oracle),
             deployer
         );
 
-        ERC1967Proxy proxy = new ERC1967Proxy(address(impl), initData);
+        proxy = address(new ERC1967Proxy(address(impl), initData));
+        console.log("PredictionMarket proxy:", proxy);
 
-        // Grant roles: allow proxy to mint/burn outcome tokens and deposit fees
-        feeVault.grantRole(feeVault.DEPOSITOR_ROLE(), address(proxy));
-        outcomeToken.grantRole(outcomeToken.MARKET_ROLE(), address(proxy));
-
-        console.log("OutcomeToken:", address(outcomeToken));
-        console.log("FeeVault:", address(feeVault));
-        console.log("PredictionMarket proxy:", address(proxy));
+        // 6. Grant roles
+        feeVault.grantRole(feeVault.DEPOSITOR_ROLE(), proxy);
+        outcomeToken.grantRole(outcomeToken.MARKET_ROLE(), proxy);
 
         vm.stopBroadcast();
 
-        return address(proxy);
+        console.log("---");
+        console.log("Deploy complete. Deployer:", deployer);
+        console.log("MockAggregator feed:", address(mockFeed));
+        console.log("USDC:", usdc);
     }
 }
