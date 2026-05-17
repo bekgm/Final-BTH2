@@ -12,22 +12,6 @@ import {GovernorTimelockControl} from "@openzeppelin/contracts/governance/extens
 import {IVotes} from "@openzeppelin/contracts/governance/utils/IVotes.sol";
 import {TimelockController} from "@openzeppelin/contracts/governance/TimelockController.sol";
 
-/// @title PredictionGovernor
-/// @notice On-chain governance contract for the PredictionMarket protocol.
-///         Proposals are voted on by PGOV token holders and executed via the
-///         GovernorTimelock after a mandatory delay.
-/// @dev    Inherits the full OpenZeppelin v5 Governor stack:
-///           - GovernorSettings            - voting delay, period, threshold
-///           - GovernorCountingSimple      - For/Against/Abstain counting
-///           - GovernorVotes               - ERC20Votes snapshot integration
-///           - GovernorVotesQuorumFraction - quorum as % of total supply
-///           - GovernorTimelockControl     - routes execution through Timelock
-///         Clock mode: uses block.timestamp (matching GovernanceToken's clock).
-///         Override list rules (OZ v5):
-///           - Functions defined in BOTH Governor and one extension -> override(Governor, Extension)
-///           - Functions defined ONLY in GovernorTimelockControl    -> override alone
-///           - supportsInterface: NOT overridden by GovernorTimelockControl -> no override needed
-/// @custom:security-contact security@predictionprotocol.xyz
 contract PredictionGovernor is
     Governor,
     GovernorSettings,
